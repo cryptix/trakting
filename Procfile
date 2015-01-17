@@ -1,1 +1,1 @@
-web: trakting serve
+web: trakting serve --ssl
