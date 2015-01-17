@@ -28,7 +28,9 @@ var (
 func serveCmd(ctx *cli.Context) {
 	boomClient = goBoom.NewClient(nil)
 
-	code, err := boomClient.User.Login()
+	code, err := boomClient.User.Login(
+		os.Getenv("OBOOM_USER"),
+		os.Getenv("OBOOM_PW"))
 	logging.CheckFatal(err)
 
 	l.Noticef("Login Response[%d]\n", code)
