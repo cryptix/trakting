@@ -65,7 +65,11 @@ func (u *UserStore) Add(name, passw string, level int) error {
 func (u *UserStore) Check(name, pass string) (interface{}, error) {
 	var user User
 	err := u.db.View(func(tx *bolt.Tx) error {
-		v := tx.Bucket([]byte(userBucket)).Get([]byte(name))
+		b := tx.Bucket([]byte(userBucket))
+		if b == nil {
+			return auth.ErrBadLogin
+		}
+		v := b.Get([]byte(name))
 		if v == nil {
 			return auth.ErrBadLogin
 		}
