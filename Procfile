@@ -1,1 +1,1 @@
-web: trakting2 serve
+web: trakting serve
