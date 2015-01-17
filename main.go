@@ -3,7 +3,6 @@ package main
 import (
 	"os"
 
-	"github.com/boltdb/bolt"
 	"github.com/codegangsta/cli"
 	"github.com/cryptix/go/logging"
 	"github.com/cryptix/trakting2/store"
@@ -26,6 +25,15 @@ func main() {
 			},
 		},
 		{
+			Name:   "createdb",
+			Action: createDbCmd,
+			Flags: []cli.Flag{
+				cli.BoolFlag{
+					Name: "drop,d",
+				},
+			},
+		},
+		{
 			Name:   "serve",
 			Usage:  "starts the webserver",
 			Action: serveCmd,
@@ -45,17 +53,25 @@ func main() {
 
 	logging.SetupLogging(nil)
 
-	db, err := bolt.Open("trakting2.db", 0600, nil)
-	logging.CheckFatal(err)
-	defer db.Close() // TODO: add notify of kill signal...
+	var err error
+	store.Connect()
 
-	userStore, err = store.NewUserStore(db)
+	userStore, err = store.NewUserStore()
 	logging.CheckFatal(err)
 
-	trackStore, err = store.NewTrackStore(db)
+	trackStore, err = store.NewTrackStore()
 	logging.CheckFatal(err)
 
 	app.Run(os.Args)
+}
+
+func createDbCmd(ctx *cli.Context) {
+	if ctx.Bool("drop") {
+		store.Drop()
+		l.Notice("db dropped")
+	}
+	store.Create()
+	l.Notice("db created")
 }
 
 func addUserCmd(ctx *cli.Context) {
