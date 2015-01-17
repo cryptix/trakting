@@ -23,15 +23,15 @@
 		},
 		{
 			"ImportPath": "github.com/cryptix/go/http/auth",
-			"Rev": "ecb9d0dbc2520c3cf821890ff173a37a7f5632b8"
+			"Rev": "0a35742c0234de8bcd73a1fc9d996446e056a26c"
 		},
 		{
 			"ImportPath": "github.com/cryptix/go/http/render",
-			"Rev": "ecb9d0dbc2520c3cf821890ff173a37a7f5632b8"
+			"Rev": "0a35742c0234de8bcd73a1fc9d996446e056a26c"
 		},
 		{
 			"ImportPath": "github.com/cryptix/go/logging",
-			"Rev": "ecb9d0dbc2520c3cf821890ff173a37a7f5632b8"
+			"Rev": "0a35742c0234de8bcd73a1fc9d996446e056a26c"
 		},
 		{
 			"ImportPath": "github.com/cryptix/goBoom",
