@@ -97,9 +97,6 @@ func serveCmd(ctx *cli.Context) {
 		Timeout: 1 * time.Minute,
 		Server:  &http.Server{Addr: listenAddr, Handler: app},
 	}
-	if ctx.Bool("ssl") {
-		logging.CheckFatal(srv.ListenAndServeTLS("cert.pem", "key.pem"))
-	} else {
-		logging.CheckFatal(srv.ListenAndServe())
-	}
+	// heroku has it's own ssl reverseproxy
+	logging.CheckFatal(srv.ListenAndServe())
 }
