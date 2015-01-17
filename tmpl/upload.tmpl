@@ -1,0 +1,18 @@
+{{ define "title" }}<title>Upload</title>{{ end }}
+{{ define "content" }}
+<div class="page-header">
+  <h1>Hello</h1>
+</div>
+<p>
+	Select File:
+	<input class="form-control" type='file' id='_file'>
+	<input class="btn btn-primary" type='button' id='_submit' value='Upload!'>
+</p>
+<div class="progress progress-striped active">
+	<div class="progress-bar progress-bar-striped" role="progressbar"></div>
+</div>
+{{end}}
+{{ define "scripts"}}
+<script type="text/javascript" src="/public/js/bootstrapProgressbar.min.js"></script>
+<script type="text/javascript" src="/public/js/uploadui.js"></script>
+{{end}}

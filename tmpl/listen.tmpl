@@ -1,0 +1,10 @@
+{{ define "title" }}<title>Listen</title>{{ end }}
+{{ define "content" }}
+<div class="page-header">
+  <h1>{{.Track.Name}} <small>by {{.Track.By}}</small></h1>
+</div>
+
+<audio src="{{.Link}}" controls ></audio>
+<br>
+<a class="btn btn-default" href="{{.Link}}">Download</a>
+{{end}}

@@ -1,0 +1,14 @@
+{{ define "title"}}<title>Error</title>{{ end}}
+{{ define "content" }}
+<div class="page-header">
+  <div class="container">
+    <h1>Error {{.StatusCode}} <small>{{.Status}}</small></h1>
+  </div>
+</div>
+<div class="container">
+  <div class="row">
+  <div></div>
+  <pre>{{.Err}}</pre>
+  </div>
+</div>
+{{ end }}

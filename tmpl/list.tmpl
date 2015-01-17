@@ -1,0 +1,12 @@
+{{ define "title" }}<title>List</title>{{ end }}
+{{ define "content" }}
+<div class="page-header">
+  <h1>List <small>all teh trackzz</small></h1>
+</div>
+<ul>
+{{range .Tracks}}
+<li><a href="/listen?t={{.BoomID}}">{{.}}</a></li>
+{{end}}
+</ul>
+
+{{end}}

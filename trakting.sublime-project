@@ -1,0 +1,21 @@
+{
+	"folders":
+	[
+		{
+			"follow_symlinks": true,
+			"path": "."
+		},
+		{
+			"follow_symlinks": true,
+			"path": "/home/cryptix/go/src/github.com/cryptix/go"
+		},
+		{
+			"follow_symlinks": true,
+			"path": "/home/cryptix/go/src/github.com/cryptix/cmd"
+		},
+		{
+			"follow_symlinks": true,
+			"path": "/home/cryptix/go/src/github.com/cryptix/goBoom"
+		}
+	]
+}
