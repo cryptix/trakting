@@ -1,5 +1,5 @@
 {
-	"ImportPath": "github.com/cryptix/trakting2",
+	"ImportPath": "github.com/cryptix/trakting",
 	"GoVersion": "go1.4.1",
 	"Deps": [
 		{
