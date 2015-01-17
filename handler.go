@@ -51,8 +51,8 @@ func Handler(m *mux.Router) http.Handler {
 	})
 	m.Get(Start).Handler(render.StaticHTML("index.tmpl"))
 
-	m.Get(AuthLogin).Handler(ah.Authorize("/"))
-	m.Get(AuthLogout).Handler(ah.Logout("/"))
+	m.Get(AuthLogin).HandlerFunc(ah.Authorize)
+	m.Get(AuthLogout).HandlerFunc(ah.Logout)
 
 	m.Get(List).Handler(ah.Authenticate(render.HTML(list)))
 	m.Get(UploadForm).Handler(ah.Authenticate(render.HTML(uploadForm)))

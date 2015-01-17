@@ -69,7 +69,12 @@ func serveCmd(ctx *cli.Context) {
 	render.SetAppRouter(r)
 	render.Load()
 
-	ah = auth.NewHandler(userStore, sessStore)
+	ah, err = auth.NewHandler(userStore,
+		auth.SetStore(sessStore),
+		auth.SetLanding("/"),
+		auth.SetLifetime(24*time.Hour),
+	)
+	logging.CheckFatal(err)
 
 	app := negroni.New(
 		negroni.NewRecovery(),
