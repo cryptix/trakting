@@ -5,7 +5,7 @@ import (
 
 	"github.com/codegangsta/cli"
 	"github.com/cryptix/go/logging"
-	"github.com/cryptix/trakting2/store"
+	"github.com/cryptix/trakting/store"
 )
 
 var l = logging.Logger("main")

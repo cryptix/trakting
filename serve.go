@@ -12,7 +12,7 @@ import (
 	"github.com/cryptix/go/http/render"
 	"github.com/cryptix/go/logging"
 	"github.com/cryptix/goBoom"
-	"github.com/cryptix/trakting2/store"
+	"github.com/cryptix/trakting/store"
 	"github.com/elazarl/go-bindata-assetfs"
 	"github.com/gorilla/securecookie"
 	"github.com/gorilla/sessions"

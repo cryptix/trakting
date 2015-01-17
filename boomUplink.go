@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 
 	"github.com/cryptix/goBoom"
-	"github.com/cryptix/trakting2/store"
+	"github.com/cryptix/trakting/store"
 )
 
 type uplinkRequest struct {

@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 
 	"github.com/cryptix/go/http/render"
-	"github.com/cryptix/trakting2/store"
+	"github.com/cryptix/trakting/store"
 	"github.com/gorilla/mux"
 )
 
