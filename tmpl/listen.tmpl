@@ -4,7 +4,7 @@
   <h1>{{.Track.Name}} <small>by {{.Track.By}}</small></h1>
 </div>
 
-<audio src="{{.Link}}" controls ></audio>
+<audio src="{{urlTo "fetch" "id" .Track.BoomID}}" controls ></audio>
 <br>
-<a class="btn btn-default" href="{{.Link}}">Download</a>
+<a class="btn btn-default" href="{{urlTo "fetch" "id" .Track.BoomID}}">Download</a>
 {{end}}

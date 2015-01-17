@@ -24,6 +24,18 @@ func init() {
 	})
 }
 
+// ugly hack to access mux.Vars in httputil ReverseProxy Director func
+func pushMuxVarsToReqUrl(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+		qry := req.URL.Query()
+		for key, value := range mux.Vars(req) {
+			qry.Set(key, value)
+		}
+		req.URL.RawQuery = qry.Encode()
+		next.ServeHTTP(rw, req)
+	})
+}
+
 func Handler(m *mux.Router) http.Handler {
 	if m == nil {
 		m = mux.NewRouter()
@@ -46,6 +58,7 @@ func Handler(m *mux.Router) http.Handler {
 	m.Get(UploadForm).Handler(ah.Authenticate(render.HTML(uploadForm)))
 	m.Get(Upload).Handler(ah.Authenticate(render.HTML(upload)))
 	m.Get(Listen).Handler(ah.Authenticate(render.HTML(listen)))
+	m.Get(Fetch).Handler(ah.Authenticate(pushMuxVarsToReqUrl(boomProxy)))
 
 	m.Get(UserProfile).Handler(ah.Authenticate(render.HTML(todo)))
 
@@ -154,19 +167,12 @@ func listen(w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 
-	link, err := boomClient.FS.Download(id)
-	if err != nil {
-		return err
-	}
-
 	var data = struct {
 		User  store.User
 		Track store.Track
-		Link  string
 	}{
 		User:  user,
 		Track: t,
-		Link:  link.String(),
 	}
 
 	return render.Render(w, r, "listen.tmpl", http.StatusOK, data)

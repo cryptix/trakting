@@ -8,6 +8,7 @@ const (
 	UploadForm = "uploadForm"
 	Upload     = "upload"
 	Listen     = "listen"
+	Fetch      = "fetch"
 
 	UserProfile = "user:profile"
 
@@ -23,6 +24,7 @@ func App() *mux.Router {
 	m.Path("/upload").Methods("GET").Name(UploadForm)
 	m.Path("/upload").Methods("POST").Name(Upload)
 	m.Path("/listen").Methods("GET").Name(Listen)
+	m.Path("/fetch/{id}").Methods("GET").Name(Fetch)
 
 	m.Path("/profile").Methods("GET").Name(UserProfile)
 
