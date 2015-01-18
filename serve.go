@@ -1,4 +1,3 @@
-//go:generate go-bindata -pkg=$GOPACKAGE tmpl/... public/...
 package main
 
 import (

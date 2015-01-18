@@ -61,3 +61,23 @@ func (u *UserStore) Check(name, pass string) (interface{}, error) {
 
 	return user, nil
 }
+
+func (u *UserStore) ChangePassword(id int64, newpw string) error {
+	var (
+		err  error
+		user User
+	)
+
+	err = u.dbh.Get(&user, id)
+	if err != nil {
+		return err
+	}
+
+	user.PwHash, err = bcrypt.GenerateFromPassword([]byte(newpw), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+
+	_, err = u.dbh.Update(&user)
+	return err
+}

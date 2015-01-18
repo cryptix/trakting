@@ -11,6 +11,7 @@ const (
 	Fetch      = "fetch"
 
 	UserProfile = "user:profile"
+	UserUpdate  = "user:update"
 
 	AuthLogin  = "auth:login"
 	AuthLogout = "auth:logout"
@@ -27,6 +28,7 @@ func App() *mux.Router {
 	m.Path("/fetch/{id}").Methods("GET").Name(Fetch)
 
 	m.Path("/profile").Methods("GET").Name(UserProfile)
+	m.Path("/profile").Methods("POST").Name(UserUpdate)
 
 	m.Path("/auth/login").Methods("POST").Name(AuthLogin)
 	m.Path("/auth/logout").Methods("GET").Name(AuthLogout)

@@ -13,6 +13,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
+//go:generate go-bindata -pkg=$GOPACKAGE tmpl/... public/...
 func init() {
 	render.Init(Asset, []string{"tmpl/base.tmpl", "tmpl/navbar.tmpl"})
 	render.AddTemplates([]string{
@@ -21,6 +22,7 @@ func init() {
 		"tmpl/list.tmpl",
 		"tmpl/upload.tmpl",
 		"tmpl/listen.tmpl",
+		"tmpl/profile.tmpl",
 	})
 }
 
@@ -60,13 +62,10 @@ func Handler(m *mux.Router) http.Handler {
 	m.Get(Listen).Handler(ah.Authenticate(render.HTML(listen)))
 	m.Get(Fetch).Handler(ah.Authenticate(pushMuxVarsToReqUrl(boomProxy)))
 
-	m.Get(UserProfile).Handler(ah.Authenticate(render.HTML(todo)))
+	m.Get(UserProfile).Handler(ah.Authenticate(render.HTML(userProfile)))
+	m.Get(UserUpdate).Handler(ah.Authenticate(render.HTML(userUpdate)))
 
 	return m
-}
-
-func todo(w http.ResponseWriter, r *http.Request) error {
-	return errors.New("TODO")
 }
 
 func list(w http.ResponseWriter, r *http.Request) error {
@@ -146,7 +145,6 @@ func upload(w http.ResponseWriter, r *http.Request) error {
 	}
 	w.WriteHeader(http.StatusCreated)
 	fmt.Fprintln(w, "Upload done.", fname)
-	// http.Redirect(w, r, "/list", http.StatusOK)
 	return nil
 }
 

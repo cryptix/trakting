@@ -1,0 +1,17 @@
+{{ define "title" }}<title>Profile</title>{{ end }}
+{{ define "content" }}
+<div class="page-header">
+  <h1>Profile <small>update password and stuff</small></h1>
+</div>
+
+<form method="POST" action="{{urlTo "user:update"}}">
+	<label for="inputCurrent">Current Password</label>
+    <input type="password" id="inputCurrent" class="form-control" placeholder="SuperSecret" required="" autofocus="" name="current">
+
+    <label for="inputNewPW">NewPassword</label>
+    <input type="password" class="form-control" placeholder="New PW" required="" id="inputNewPW" name="new">
+    <input type="password" class="form-control" placeholder="Repeat" required="" name="repeat">
+
+    <button class="btn btn-lg btn-primary btn-block" type="submit">Save</button>
+</form>
+{{end}}
