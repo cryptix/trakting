@@ -39,21 +39,21 @@ func serveCmd(ctx *cli.Context) {
 	go handlePushes(c)
 	pushUp = c
 
-	var hashKey, blockKey []byte
+	var s store.Settings
 
-	if ctx.Bool("ssl") {
-		hashKey = securecookie.GenerateRandomKey(32)
-		blockKey = securecookie.GenerateRandomKey(32)
-	} else {
-		// dev
-		hashKey = []byte("verysecretverysecretverysecret!!")
-		blockKey = []byte("verysecretverysecretverysecret@@")
+	err = store.DBH.SelectOne(&s, `SELECT * FROM appsettings`)
+	logging.CheckFatal(err)
+
+	if len(s.HashKey) < 32 || len(s.BlockKey) < 32 {
+		l.Critical("Warning! cookie keys too short, generating new..")
+		s.HashKey = securecookie.GenerateRandomKey(32)
+		s.BlockKey = securecookie.GenerateRandomKey(32)
 	}
 
 	sessStore := &sessions.CookieStore{
 
 		Codecs: []securecookie.Codec{
-			securecookie.New(hashKey, blockKey),
+			securecookie.New(s.HashKey, s.BlockKey),
 		},
 		Options: &sessions.Options{
 			Path:     "/",

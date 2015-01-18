@@ -5,6 +5,7 @@ import (
 	"sync"
 
 	"github.com/cryptix/go/logging"
+	"github.com/gorilla/securecookie"
 	"github.com/jmoiron/modl"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
@@ -31,14 +32,26 @@ func Connect() {
 	})
 }
 
+type Settings struct {
+	HashKey, BlockKey []byte
+}
+
 // Create the database schema. It calls log.Fatal if it encounters an error.
 func Create() {
+	DB.AddTableWithName(Settings{}, "appsettings")
+
 	err := DB.CreateTablesIfNotExists()
+	logging.CheckFatal(err)
+
+	err = DBH.Insert(&Settings{
+		HashKey:  securecookie.GenerateRandomKey(32),
+		BlockKey: securecookie.GenerateRandomKey(32),
+	})
 	logging.CheckFatal(err)
 }
 
 // Drop the database schema.
-func Drop() (err error) {
-	_, err = DB.Exec(`DROP TABLE IF EXISTS "track";DROP TABLE IF EXISTS "user";`)
-	return
+func Drop() {
+	_, err := DB.Exec(`DROP TABLE IF EXISTS "track";DROP TABLE IF EXISTS "user";DROP TABLE IF EXISTS "appsettings";`)
+	logging.CheckFatal(err)
 }
