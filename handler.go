@@ -121,7 +121,7 @@ func upload(w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 
-	fname := filepath.Join(os.TempDir(), header.Filename)
+	fname := filepath.Join(os.TempDir(), filepath.Base(header.Filename))
 	input, err := os.Create(fname)
 	if err != nil {
 		return err
