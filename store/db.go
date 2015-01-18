@@ -26,7 +26,7 @@ var connectOnce sync.Once
 func Connect() {
 	connectOnce.Do(func() {
 		var err error
-		DB.Dbx, err = sqlx.Open("postgres", os.Getenv("HEROKU_POSTGRESQL_PURPLE_URL"))
+		DB.Dbx, err = sqlx.Open("postgres", os.Getenv("DATABASE_URL"))
 		logging.CheckFatal(err)
 		DB.Db = DB.Dbx.DB
 	})
