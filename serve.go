@@ -79,6 +79,7 @@ func serveCmd(ctx *cli.Context) {
 	secuirtyHeaders := secure.New(secure.Options{
 		AllowedHosts:          []string{"trakting.herokuapp.com"},
 		SSLRedirect:           true,
+		SSLTemporaryRedirect:  true,
 		STSSeconds:            315360000,
 		FrameDeny:             true,
 		ContentTypeNosniff:    true,
