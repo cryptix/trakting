@@ -84,7 +84,6 @@ func serveCmd(ctx *cli.Context) {
 		ContentTypeNosniff:    true,
 		BrowserXssFilter:      true,
 		ContentSecurityPolicy: "default-src 'self'",
-		IsDevelopment:         true,
 	})
 	app := negroni.New(
 		negroni.NewRecovery(),
