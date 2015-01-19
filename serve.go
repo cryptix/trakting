@@ -16,6 +16,7 @@ import (
 	"github.com/gorilla/securecookie"
 	"github.com/gorilla/sessions"
 	"github.com/stretchr/graceful"
+	"gopkg.in/unrolled/secure.v1"
 )
 
 var (
@@ -75,10 +76,21 @@ func serveCmd(ctx *cli.Context) {
 	)
 	logging.CheckFatal(err)
 
+	secuirtyHeaders := secure.New(secure.Options{
+		AllowedHosts:          []string{"trakting.herokuapp.com"},
+		SSLRedirect:           true,
+		STSSeconds:            315360000,
+		FrameDeny:             true,
+		ContentTypeNosniff:    true,
+		BrowserXssFilter:      true,
+		ContentSecurityPolicy: "default-src 'self'",
+		IsDevelopment:         true,
+	})
 	app := negroni.New(
 		negroni.NewRecovery(),
 		logging.NewNegroni("trakting"),
 	)
+	app.Use(negroni.HandlerFunc(secuirtyHeaders.HandlerFuncWithNext))
 
 	r.PathPrefix("/public/").Handler(http.StripPrefix("/public/", http.FileServer(
 		&assetfs.AssetFS{

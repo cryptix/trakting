@@ -106,6 +106,10 @@
 		{
 			"ImportPath": "golang.org/x/net/netutil",
 			"Rev": "1db34d83398887aa887306d261882f799bee3678"
+		},
+		{
+			"ImportPath": "gopkg.in/unrolled/secure.v1",
+			"Rev": "7c5d20f5d23b4825dfe542a006b37d6bdb5950f6"
 		}
 	]
 }
