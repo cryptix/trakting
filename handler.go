@@ -3,10 +3,9 @@ package main
 import (
 	"errors"
 	"fmt"
-	"io"
 	"net/http"
-	"os"
-	"path/filepath"
+	"strconv"
+	"strings"
 
 	"github.com/cryptix/go/http/render"
 	"github.com/cryptix/trakting/store"
@@ -58,7 +57,7 @@ func Handler(m *mux.Router) http.Handler {
 
 	m.Get(List).Handler(ah.Authenticate(render.HTML(list)))
 	m.Get(UploadForm).Handler(ah.Authenticate(render.HTML(uploadForm)))
-	m.Get(Upload).Handler(ah.Authenticate(render.HTML(upload)))
+	m.Get(Upload).Handler(ah.Authenticate(render.Binary(upload)))
 	m.Get(Listen).Handler(ah.Authenticate(render.HTML(listen)))
 	m.Get(Fetch).Handler(ah.Authenticate(pushMuxVarsToReqUrl(boomProxy)))
 
@@ -116,35 +115,38 @@ func upload(w http.ResponseWriter, r *http.Request) error {
 		return errors.New("type conversion error")
 	}
 
-	file, header, err := r.FormFile("fupload")
+	ct := r.Header.Get("Content-Type")
+	if !strings.HasPrefix(ct, "multipart/form-data;") {
+		return errors.New("illegal content-type")
+	}
+
+	clen, err := strconv.ParseInt(r.Header.Get("Content-Length"), 10, 64)
 	if err != nil {
 		return err
 	}
 
-	fname := filepath.Join(os.TempDir(), filepath.Base(header.Filename))
-	input, err := os.Create(fname)
+	stat, err := boomClient.FS.RawUpload(ct, clen, r.Body)
 	if err != nil {
 		return err
 	}
-	defer input.Close()
 
-	if _, err = io.Copy(input, file); err != nil {
+	l.Noticef("uplink done: %v", stat)
+	if len(stat) != 1 {
+		return errors.New("no stat returned.. really weird error")
+	}
+
+	track := store.Track{
+		By:     user.Name,
+		Name:   stat[0].Name(),
+		BoomID: stat[0].ID,
+	}
+
+	if err := trackStore.Add(track); err != nil {
 		return err
 	}
-	l.Notice("upload taken:", fname)
 
-	req := uplinkRequest{
-		User: user,
-		Name: fname,
-		Resp: make(chan error),
-	}
-	pushUp <- req
-
-	if err = <-req.Resp; err != nil {
-		return err
-	}
 	w.WriteHeader(http.StatusCreated)
-	fmt.Fprintln(w, "Upload done.", fname)
+	fmt.Fprintln(w, "Upload done.", stat[0].Name())
 	return nil
 }
 

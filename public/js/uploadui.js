@@ -25,7 +25,7 @@ $(function() {
 		}
 
 		var data = new FormData();
-		data.append('fupload', files[0]);
+		data.append('file', files[0]);
 
 		$.ajax({
 			xhr: prepareXHR,

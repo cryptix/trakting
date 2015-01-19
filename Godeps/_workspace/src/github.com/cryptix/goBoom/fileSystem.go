@@ -3,11 +3,15 @@ package goBoom
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"io"
 	"mime/multipart"
+	"net/http"
 	"net/url"
 	"path/filepath"
 	"strings"
+
+	"github.com/bitly/go-simplejson"
 )
 
 type FilesystemService struct {
@@ -93,6 +97,73 @@ func (s *FilesystemService) Upload(fname string, input io.Reader) ([]ItemStat, e
 		return nil, err
 	}
 	s.c.api.Api.BaseUrl.Host = oldHost
+
+	var items []ItemStat
+	if err = decodeInto(&items, arr[1]); err != nil {
+		return nil, err
+	}
+
+	return items, nil
+}
+
+// RawUpload expects a multipart io.Reader and pushes it to the service
+func (s *FilesystemService) RawUpload(ct string, clen int64, multiBody io.Reader) ([]ItemStat, error) {
+
+	servers, err := s.GetULServer()
+	if err != nil {
+		return nil, err
+	}
+
+	if len(servers) < 1 {
+		return nil, errors.New("no servers available for upload")
+	}
+
+	// prepare request
+	req, err := http.NewRequest("POST", "http://"+servers[0]+"/1.0/ul", multiBody)
+	if err != nil {
+		return nil, err
+	}
+
+	req.ContentLength = clen
+	req.Header.Set("Content-Type", ct)
+
+	qry := req.URL.Query()
+	qry.Set("token", s.c.User.session)
+	qry.Set("name_policy", "rename")
+	qry.Set("parent", "1")
+	req.URL.RawQuery = qry.Encode()
+
+	resp, err := s.c.c.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	jsonResp, err := simplejson.NewFromReader(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	arr, err := jsonResp.Array()
+	if err != nil {
+		return nil, err
+	}
+
+	if len(arr) < 1 {
+		return nil, ErrorResponse{resp, "Illegal oBoom response"}
+	}
+
+	statusCode, err := jsonResp.GetIndex(0).Int()
+	if err != nil {
+		return nil, err
+	}
+
+	if statusCode != resp.StatusCode {
+		return nil, ErrorResponse{resp, fmt.Sprintf("StatusCode missmatch. %d vs %d\n%+v",
+			statusCode,
+			resp.StatusCode,
+			jsonResp)}
+	}
 
 	var items []ItemStat
 	if err = decodeInto(&items, arr[1]); err != nil {

@@ -35,10 +35,6 @@ func serveCmd(ctx *cli.Context) {
 
 	l.Noticef("Login Response[%d]\n", code)
 
-	c := make(chan uplinkRequest)
-	go handlePushes(c)
-	pushUp = c
-
 	var s store.Settings
 
 	err = store.DBH.SelectOne(&s, `SELECT * FROM appsettings`)

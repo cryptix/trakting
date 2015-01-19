@@ -35,7 +35,7 @@
 		},
 		{
 			"ImportPath": "github.com/cryptix/goBoom",
-			"Rev": "ec867774763059ff925587684f6e86106fe1aff7"
+			"Rev": "31e1e34c0f59ba1e343896b0499a7a38fda8a7ad"
 		},
 		{
 			"ImportPath": "github.com/cryptix/gocrayons",
@@ -105,7 +105,7 @@
 		},
 		{
 			"ImportPath": "golang.org/x/net/netutil",
-			"Rev": "1db34d83398887aa887306d261882f799bee3678"
+			"Rev": "8b2d0ae1f4c3b83c10ff17e89a89ff04cc0903c3"
 		},
 		{
 			"ImportPath": "gopkg.in/unrolled/secure.v1",
