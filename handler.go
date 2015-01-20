@@ -12,6 +12,8 @@ import (
 	"github.com/gorilla/mux"
 )
 
+const parentUploadFolder = "24RWR71O"
+
 //go:generate go-bindata -pkg=$GOPACKAGE tmpl/... public/...
 func init() {
 	render.Init(Asset, []string{"tmpl/base.tmpl", "tmpl/navbar.tmpl"})
@@ -125,7 +127,7 @@ func upload(w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 
-	stat, err := boomClient.FS.RawUpload(ct, clen, r.Body)
+	stat, err := boomClient.FS.RawUpload(parentUploadFolder, ct, clen, r.Body)
 	if err != nil {
 		return err
 	}

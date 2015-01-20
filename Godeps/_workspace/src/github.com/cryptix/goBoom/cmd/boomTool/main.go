@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"os"
 	"path/filepath"
 	"time"
@@ -11,16 +10,22 @@ import (
 	"github.com/cryptix/goBoom"
 )
 
-var client *goBoom.Client
+var (
+	client *goBoom.Client
+	l      = logging.Logger("boomTool")
+)
 
 func init() {
+	logging.SetupLogging(nil)
+
 	start := time.Now()
 	client = goBoom.NewClient(nil)
-
-	code, _, err := client.User.Login("email", "clearPassword")
+	_, err := client.User.Login(
+		os.Getenv("OBOOM_USER"),
+		os.Getenv("OBOOM_PW"))
 	logging.CheckFatal(err)
 
-	log.Printf("Login Response: %d (took %v)\n", code, time.Since(start))
+	l.Noticef("Login worked.(took %v)", time.Since(start))
 }
 
 func main() {
@@ -32,12 +37,12 @@ func main() {
 			Usage: "list...",
 			Action: func(c *cli.Context) {
 				wd := c.Args().First()
-				log.Println("Listing ", wd)
+				l.Notice("Listing ", wd)
 
-				_, ls, err := client.Info.Ls(wd)
+				ls, err := client.Info.Ls(wd)
 				logging.CheckFatal(err)
 				for _, item := range ls.Items {
-					log.Printf("%8s - %s\n", item.ID, item.Name())
+					l.Noticef("%8s - %s", item.ID, item.Name())
 				}
 			},
 		},
@@ -50,13 +55,45 @@ func main() {
 
 				file, err := os.Open(fname)
 				logging.CheckFatal(err)
+				defer file.Close()
 
-				log.Println("uploading ", file)
+				l.Notice("uploading ", file)
 				stats, err := client.FS.Upload(filepath.Base(fname), file)
 				logging.CheckFatal(err)
 				for _, item := range stats {
-					log.Printf("%8s - %s\n", item.ID, item.Name())
+					l.Noticef("%8s - %s", item.ID, item.Name())
 				}
+			},
+		},
+		{
+			Name:      "mkdir",
+			ShortName: "m",
+			Usage:     "create a folder",
+			Action: func(c *cli.Context) {
+
+				parent := c.Args().First()
+				if parent == "" {
+					l.Fatal("no parent id")
+				}
+
+				name := c.Args().Get(1)
+				if parent == "" {
+					l.Fatal("empty name")
+				}
+
+				err := client.FS.Mkdir(parent, name)
+				logging.CheckFatal(err)
+			},
+		},
+		{
+			Name:  "rm",
+			Flags: []cli.Flag{cli.BoolFlag{Name: "trash,t"}},
+			Action: func(c *cli.Context) {
+				item := c.Args().First()
+				l.Notice("deleting ", item)
+
+				err := client.FS.Rm(c.Bool("trash"), item)
+				logging.CheckFatal(err)
 			},
 		},
 		{
@@ -67,14 +104,13 @@ func main() {
 
 				item := c.Args().First()
 				if item == "" {
-					println("no item id")
-					os.Exit(1)
+					l.Fatal("no item id")
 				}
 
-				log.Println("Requesting link for", item)
-				_, url, err := client.FS.Download(item)
+				l.Notice("Requesting link for", item)
+				url, err := client.FS.Download(item)
 				logging.CheckFatal(err)
-				println(url.String())
+				l.Notice(url.String())
 			},
 		},
 	}

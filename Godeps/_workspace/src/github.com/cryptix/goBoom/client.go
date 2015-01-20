@@ -43,7 +43,7 @@ type Client struct {
 	// Base URL for API requests.  baseURL should always be specified with a trailing slash.
 	baseURL *url.URL
 
-	// User agent used when communicating with the PSHDL REST API.
+	// User agent used when communicating with the REST API.
 	userAgent string
 
 	User *UserService
@@ -51,7 +51,7 @@ type Client struct {
 	FS   *FilesystemService
 }
 
-// NewClient returns a new PSHDL REST API client.  If a nil httpClient is
+// NewClient returns a new REST API client.  If a nil httpClient is
 // provided, http.DefaultClient will be used.
 func NewClient(httpClient *http.Client) *Client {
 	if httpClient == nil {

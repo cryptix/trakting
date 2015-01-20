@@ -42,11 +42,37 @@ func (s *FilesystemService) GetULServer() ([]string, error) {
 	}
 
 	return servers, nil
+}
 
+func (s *FilesystemService) Mkdir(parent, name string) error {
+	params := map[string]string{
+		"token":  s.c.User.session,
+		"name":   name,
+		"parent": parent,
+	}
+	resp, err := s.c.api.Res("mkdir").Get(params)
+	_, err = processResponse(resp, err)
+	return err
+}
+
+func (s *FilesystemService) Rm(toTrash bool, items ...string) error {
+	params := map[string]string{
+		"token": s.c.User.session,
+		"items": strings.Join(items, ","),
+	}
+	if toTrash == false {
+		params["move_to_trash"] = "false"
+	} else {
+		params["move_to_trash"] = "true"
+	}
+
+	resp, err := s.c.api.Res("rm").Get(params)
+	_, err = processResponse(resp, err)
+	return err
 }
 
 // Upload pushes the input io.Reader to the service
-func (s *FilesystemService) Upload(fname string, input io.Reader) ([]ItemStat, error) {
+func (s *FilesystemService) Upload(parent, fname string, input io.Reader) ([]ItemStat, error) {
 
 	servers, err := s.GetULServer()
 	if err != nil {
@@ -87,7 +113,7 @@ func (s *FilesystemService) Upload(fname string, input io.Reader) ([]ItemStat, e
 	params := map[string]string{
 		"token":       s.c.User.session,
 		"name_policy": "rename",
-		"parent":      "1", // TODO: configure parent
+		"parent":      parent,
 	}
 
 	// do the request
@@ -107,7 +133,7 @@ func (s *FilesystemService) Upload(fname string, input io.Reader) ([]ItemStat, e
 }
 
 // RawUpload expects a multipart io.Reader and pushes it to the service
-func (s *FilesystemService) RawUpload(ct string, clen int64, multiBody io.Reader) ([]ItemStat, error) {
+func (s *FilesystemService) RawUpload(parent, ct string, clen int64, multiBody io.Reader) ([]ItemStat, error) {
 
 	servers, err := s.GetULServer()
 	if err != nil {
@@ -119,7 +145,7 @@ func (s *FilesystemService) RawUpload(ct string, clen int64, multiBody io.Reader
 	}
 
 	// prepare request
-	req, err := http.NewRequest("POST", "http://"+servers[0]+"/1.0/ul", multiBody)
+	req, err := http.NewRequest("POST", "https://"+servers[0]+"/1.0/ul", multiBody)
 	if err != nil {
 		return nil, err
 	}
@@ -130,7 +156,7 @@ func (s *FilesystemService) RawUpload(ct string, clen int64, multiBody io.Reader
 	qry := req.URL.Query()
 	qry.Set("token", s.c.User.session)
 	qry.Set("name_policy", "rename")
-	qry.Set("parent", "1")
+	qry.Set("parent", parent)
 	req.URL.RawQuery = qry.Encode()
 
 	resp, err := s.c.c.Do(req)
