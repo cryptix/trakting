@@ -3,6 +3,7 @@ package store
 import (
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/jmoiron/modl"
 )
@@ -16,6 +17,7 @@ type Track struct {
 	By     string
 	Name   string
 	BoomID string
+	Added  time.Time
 }
 
 func (t Track) String() string {
@@ -35,6 +37,7 @@ func NewTrackStore() (*TrackStore, error) {
 }
 
 func (t *TrackStore) Add(tr Track) error {
+	tr.Added = time.Now()
 	return t.dbh.Insert(&tr)
 }
 
@@ -46,12 +49,12 @@ func (t *TrackStore) Get(boomID string) (Track, error) {
 
 func (t *TrackStore) All() ([]Track, error) {
 	var tracks []Track
-	err := t.dbh.Select(&tracks, `SELECT * FROM "track"`)
+	err := t.dbh.Select(&tracks, `SELECT * FROM "track" ORDER BY added DESC`)
 	return tracks, err
 }
 
 func (t *TrackStore) ByUserName(name string) ([]Track, error) {
 	var tracks []Track
-	err := t.dbh.Select(&tracks, `SELECT * FROM "track" WHERE by = $1`, name)
+	err := t.dbh.Select(&tracks, `SELECT * FROM "track" WHERE by = $1 ORDER BY added DESC`, name)
 	return tracks, err
 }
