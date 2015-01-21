@@ -10,6 +10,7 @@ import (
 
 func init() {
 	DB.AddTable(Track{}).SetKeys(true, "id")
+	createSql = append(createSql, `alter table track alter added set default now()`)
 }
 
 type Track struct {

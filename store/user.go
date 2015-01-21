@@ -12,6 +12,7 @@ import (
 func init() {
 	gob.Register(User{}) // for auth
 	DB.AddTable(User{}).SetKeys(true, "id")
+	createSql = append(createSql, `alter table "user" ADD UNIQUE (name)`)
 }
 
 type User struct {

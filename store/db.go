@@ -36,12 +36,19 @@ type Settings struct {
 	HashKey, BlockKey []byte
 }
 
+var createSql []string
+
 // Create the database schema. It calls log.Fatal if it encounters an error.
 func Create() {
 	DB.AddTableWithName(Settings{}, "appsettings")
 
 	err := DB.CreateTablesIfNotExists()
 	logging.CheckFatal(err)
+
+	for _, s := range createSql {
+		_, err = DB.Exec(s)
+		logging.CheckFatal(err)
+	}
 
 	err = DBH.Insert(&Settings{
 		HashKey:  securecookie.GenerateRandomKey(32),
