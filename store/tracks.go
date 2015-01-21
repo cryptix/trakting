@@ -49,3 +49,9 @@ func (t *TrackStore) All() ([]Track, error) {
 	err := t.dbh.Select(&tracks, `SELECT * FROM "track"`)
 	return tracks, err
 }
+
+func (t *TrackStore) ByUserName(name string) ([]Track, error) {
+	var tracks []Track
+	err := t.dbh.Select(&tracks, `SELECT * FROM "track" WHERE by = $1`, name)
+	return tracks, err
+}

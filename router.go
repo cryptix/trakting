@@ -5,6 +5,7 @@ import "github.com/gorilla/mux"
 const (
 	Start      = "start"
 	List       = "list"
+	ListByUser = "list:by"
 	UploadForm = "uploadForm"
 	Upload     = "upload"
 	Listen     = "listen"
@@ -22,6 +23,7 @@ func App() *mux.Router {
 
 	m.Path("/start").Methods("GET").Name(Start)
 	m.Path("/list").Name(List)
+	m.Path("/list/by/{user}").Name(ListByUser)
 	m.Path("/upload").Methods("GET").Name(UploadForm)
 	m.Path("/upload").Methods("POST").Name(Upload)
 	m.Path("/listen").Methods("GET").Name(Listen)

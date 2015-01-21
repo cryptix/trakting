@@ -74,6 +74,8 @@ func Handler(m *mux.Router) http.Handler {
 	m.Get(AuthLogout).HandlerFunc(ah.Logout)
 
 	m.Get(List).Handler(render.HTML(wrapAuthedHandler(list)))
+	m.Get(ListByUser).Handler(render.HTML(wrapAuthedHandler(listByUser)))
+
 	m.Get(UploadForm).Handler(render.HTML(wrapAuthedHandler(uploadForm)))
 	m.Get(Upload).Handler(render.Binary(wrapAuthedHandler(upload)))
 	m.Get(Listen).Handler(render.HTML(wrapAuthedHandler(listen)))
