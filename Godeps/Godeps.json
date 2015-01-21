@@ -77,7 +77,7 @@
 		},
 		{
 			"ImportPath": "github.com/mitchellh/mapstructure",
-			"Rev": "740c764bc6149d3f1806231418adb9f52c11bcbf"
+			"Rev": "442e588f213303bec7936deba67901f8fc8f18b1"
 		},
 		{
 			"ImportPath": "github.com/oxtoacart/bpool",
@@ -105,7 +105,7 @@
 		},
 		{
 			"ImportPath": "golang.org/x/net/netutil",
-			"Rev": "8b2d0ae1f4c3b83c10ff17e89a89ff04cc0903c3"
+			"Rev": "d46df1aba1c84278851452caf6b455d9139859de"
 		},
 		{
 			"ImportPath": "gopkg.in/unrolled/secure.v1",
