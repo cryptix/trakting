@@ -1,11 +1,11 @@
-package trakting
+package main
 
 import (
 	"errors"
 	"net/http"
 
+	"github.com/cryptix/go/http/render"
 	"github.com/cryptix/trakting/store"
-	"github.com/gin-gonic/gin/render"
 )
 
 func list(w http.ResponseWriter, r *http.Request) error {
