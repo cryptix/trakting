@@ -39,6 +39,22 @@ func pushMuxVarsToReqUrl(next http.Handler) http.Handler {
 	})
 }
 
+type handlerWithUser func(user store.User, rw http.ResponseWriter, req *http.Request) error
+
+func wrapAuthedHandler(h handlerWithUser) func(http.ResponseWriter, *http.Request) error {
+	return func(w http.ResponseWriter, r *http.Request) error {
+		i, err := ah.AuthenticateRequest(r)
+		if err != nil {
+			return err
+		}
+		user, ok := i.(store.User)
+		if !ok {
+			return errors.New("user type conversion error")
+		}
+		return h(user, w, r)
+	}
+}
+
 func Handler(m *mux.Router) http.Handler {
 	if m == nil {
 		m = mux.NewRouter()
@@ -57,42 +73,27 @@ func Handler(m *mux.Router) http.Handler {
 	m.Get(AuthLogin).HandlerFunc(ah.Authorize)
 	m.Get(AuthLogout).HandlerFunc(ah.Logout)
 
-	m.Get(List).Handler(ah.Authenticate(render.HTML(list)))
-	m.Get(UploadForm).Handler(ah.Authenticate(render.HTML(uploadForm)))
-	m.Get(Upload).Handler(ah.Authenticate(render.Binary(upload)))
-	m.Get(Listen).Handler(ah.Authenticate(render.HTML(listen)))
+	m.Get(List).Handler(render.HTML(wrapAuthedHandler(list)))
+	m.Get(UploadForm).Handler(render.HTML(wrapAuthedHandler(uploadForm)))
+	m.Get(Upload).Handler(render.Binary(wrapAuthedHandler(upload)))
+	m.Get(Listen).Handler(render.HTML(wrapAuthedHandler(listen)))
 	m.Get(Fetch).Handler(ah.Authenticate(pushMuxVarsToReqUrl(boomProxy)))
 
-	m.Get(UserProfile).Handler(ah.Authenticate(render.HTML(userProfile)))
-	m.Get(UserUpdate).Handler(ah.Authenticate(render.HTML(userUpdate)))
+	m.Get(UserProfile).Handler(render.HTML(wrapAuthedHandler(userProfile)))
+	m.Get(UserUpdate).Handler(render.HTML(wrapAuthedHandler(userUpdate)))
 
 	return m
 }
 
-func uploadForm(w http.ResponseWriter, r *http.Request) error {
-	// allready authenticated
-	i, _ := ah.AuthenticateRequest(r)
-	user, ok := i.(store.User)
-	if !ok {
-		return errors.New("type conversion error")
-	}
-
-	var data = struct {
+func uploadForm(user store.User, w http.ResponseWriter, r *http.Request) error {
+	return render.Render(w, r, "upload.tmpl", http.StatusOK, struct {
 		User store.User
 	}{
 		User: user,
-	}
-
-	return render.Render(w, r, "upload.tmpl", http.StatusOK, data)
+	})
 }
 
-func upload(w http.ResponseWriter, r *http.Request) error {
-	i, _ := ah.AuthenticateRequest(r)
-	user, ok := i.(store.User)
-	if !ok {
-		return errors.New("type conversion error")
-	}
-
+func upload(user store.User, w http.ResponseWriter, r *http.Request) error {
 	ct := r.Header.Get("Content-Type")
 	if !strings.HasPrefix(ct, "multipart/form-data;") {
 		return errors.New("illegal content-type")
@@ -128,13 +129,7 @@ func upload(w http.ResponseWriter, r *http.Request) error {
 	return nil
 }
 
-func listen(w http.ResponseWriter, r *http.Request) error {
-	i, _ := ah.AuthenticateRequest(r)
-	user, ok := i.(store.User)
-	if !ok {
-		return errors.New("type conversion error")
-	}
-
+func listen(user store.User, w http.ResponseWriter, r *http.Request) error {
 	id := r.URL.Query().Get("t")
 	if id == "" {
 		return errors.New("missing id parameter")

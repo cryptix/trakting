@@ -8,29 +8,15 @@ import (
 	"github.com/cryptix/trakting/store"
 )
 
-func userProfile(w http.ResponseWriter, r *http.Request) error {
-	// allready authenticated
-	i, _ := ah.AuthenticateRequest(r)
-	user, ok := i.(store.User)
-	if !ok {
-		return errors.New("type conversion error")
-	}
-	var data = struct {
+func userProfile(user store.User, w http.ResponseWriter, r *http.Request) error {
+	return render.Render(w, r, "profile.tmpl", http.StatusOK, struct {
 		User store.User
 	}{
 		User: user,
-	}
-	return render.Render(w, r, "profile.tmpl", http.StatusOK, data)
+	})
 }
 
-func userUpdate(w http.ResponseWriter, r *http.Request) error {
-	// allready authenticated
-	i, _ := ah.AuthenticateRequest(r)
-	user, ok := i.(store.User)
-	if !ok {
-		return errors.New("type conversion error")
-	}
-
+func userUpdate(user store.User, w http.ResponseWriter, r *http.Request) error {
 	if err := r.ParseForm(); err != nil {
 		return err
 	}

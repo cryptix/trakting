@@ -1,21 +1,13 @@
 package main
 
 import (
-	"errors"
 	"net/http"
 
 	"github.com/cryptix/go/http/render"
 	"github.com/cryptix/trakting/store"
 )
 
-func list(w http.ResponseWriter, r *http.Request) error {
-	// allready authenticated
-	i, _ := ah.AuthenticateRequest(r)
-	user, ok := i.(store.User)
-	if !ok {
-		return errors.New("type conversion error")
-	}
-
+func list(user store.User, w http.ResponseWriter, r *http.Request) error {
 	tracks, err := trackStore.All()
 	if err != nil {
 		return err
