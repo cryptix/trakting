@@ -17,3 +17,13 @@ type Userer interface {
 	Add(name, passw string, level int) error
 	ChangePassword(id int64, newpw string) error
 }
+
+type ArgAddUser struct {
+	Name, Passw string
+	Level       int
+}
+
+type ArgChangePassword struct {
+	ID    int64
+	Passw string
+}
