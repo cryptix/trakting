@@ -65,16 +65,6 @@ type WithStringPk struct {
 
 type CustomStringType string
 
-type WithEmbeddedStruct struct {
-	Id int64
-	Names
-}
-
-type Names struct {
-	FirstName string
-	LastName  string
-}
-
 func (p *Person) PreInsert(s SqlExecutor) error {
 	p.Created = time.Now().UnixNano()
 	p.Updated = p.Created
@@ -605,93 +595,6 @@ func TestWithStringPk(t *testing.T) {
 	err = dbmap.Insert(row)
 	if err == nil {
 		t.Errorf("Expected error when inserting into table w/non Int PK and autoincr set true")
-	}
-}
-
-func TestWithEmbeddedStruct(t *testing.T) {
-	dbmap := newDbMap()
-	//dbmap.TraceOn("", log.New(os.Stdout, "modltest: ", log.Lmicroseconds))
-	dbmap.AddTableWithName(WithEmbeddedStruct{}, "embedded_struct_test").SetKeys(true, "ID")
-	err := dbmap.CreateTables()
-	if err != nil {
-		t.Errorf("couldn't create embedded_struct_test: %v", err)
-	}
-	defer dbmap.DropTables()
-
-	row := &WithEmbeddedStruct{Names: Names{"Alice", "Smith"}}
-	err = dbmap.Insert(row)
-	if err != nil {
-		t.Errorf("Error inserting into table w/embedded struct: %v", err)
-	}
-
-	var es WithEmbeddedStruct
-	err = dbmap.Get(&es, row.Id)
-	if err != nil {
-		t.Errorf("Error selecting from table w/embedded struct: %v", err)
-	}
-}
-
-func TestWithEmbeddedStructAutoIncrColNotFirst(t *testing.T) {
-	// Tests that the tablemap retains separate indices for SQL
-	// columns (which are flattened with respect to struct embedding)
-	// and Go fields (which are not). In this test case, the
-	// auto-incremented column is the 3rd column in SQL but the 2nd Go
-	// field.
-
-	type Embedded struct{ A, B string }
-	type withAutoIncrColNotFirst struct {
-		Embedded
-		ID int
-	}
-
-	dbmap := newDbMap()
-	//dbmap.TraceOn("", log.New(os.Stdout, "modltest: ", log.Lmicroseconds))
-	dbmap.AddTableWithName(withAutoIncrColNotFirst{}, "auto_incr_col_not_first_test").SetKeys(true, "ID")
-	if err := dbmap.CreateTables(); err != nil {
-		t.Errorf("couldn't create auto_incr_col_not_first_test: %v", err)
-	}
-	defer dbmap.Cleanup()
-
-	row := withAutoIncrColNotFirst{Embedded: Embedded{A: "a"}, ID: 0}
-	if err := dbmap.Insert(&row); err != nil {
-		t.Fatal(err)
-	}
-
-	var got withAutoIncrColNotFirst
-	if err := dbmap.Get(&got, row.ID); err != nil {
-		t.Fatal(err)
-	}
-	if got != row {
-		t.Errorf("Got %+v, want %+v", got, row)
-	}
-}
-
-func TestWithEmbeddedAutoIncrCol(t *testing.T) {
-	type EmbeddedID struct {
-		A  string
-		ID int
-	}
-	type embeddedAutoIncrCol struct{ EmbeddedID }
-
-	dbmap := newDbMap()
-	//dbmap.TraceOn("", log.New(os.Stdout, "modltest: ", log.Lmicroseconds))
-	dbmap.AddTableWithName(embeddedAutoIncrCol{}, "embedded_auto_incr_col_test").SetKeys(true, "ID")
-	if err := dbmap.CreateTables(); err != nil {
-		t.Errorf("couldn't create embedded_auto_incr_col_test: %v", err)
-	}
-	defer dbmap.Cleanup()
-
-	row := embeddedAutoIncrCol{EmbeddedID{A: "a", ID: 0}}
-	if err := dbmap.Insert(&row); err != nil {
-		t.Fatal(err)
-	}
-
-	var got embeddedAutoIncrCol
-	if err := dbmap.Get(&got, row.ID); err != nil {
-		t.Fatal(err)
-	}
-	if got != row {
-		t.Errorf("Got %+v, want %+v", got, row)
 	}
 }
 

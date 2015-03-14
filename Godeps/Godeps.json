@@ -9,8 +9,8 @@
 		},
 		{
 			"ImportPath": "github.com/codegangsta/cli",
-			"Comment": "1.2.0-62-gbf4a526",
-			"Rev": "bf4a526f48af7badd25d2cb02d587e1b01be3b50"
+			"Comment": "1.2.0-87-g8ce64f1",
+			"Rev": "8ce64f19ff08029a69d11b7615c9b591245450ad"
 		},
 		{
 			"ImportPath": "github.com/codegangsta/negroni",
@@ -23,15 +23,15 @@
 		},
 		{
 			"ImportPath": "github.com/cryptix/go/http/auth",
-			"Rev": "0a35742c0234de8bcd73a1fc9d996446e056a26c"
+			"Rev": "cf7e3cc69648a538a419b7d1b858681145c7f8bc"
 		},
 		{
 			"ImportPath": "github.com/cryptix/go/http/render",
-			"Rev": "0a35742c0234de8bcd73a1fc9d996446e056a26c"
+			"Rev": "cf7e3cc69648a538a419b7d1b858681145c7f8bc"
 		},
 		{
 			"ImportPath": "github.com/cryptix/go/logging",
-			"Rev": "0a35742c0234de8bcd73a1fc9d996446e056a26c"
+			"Rev": "cf7e3cc69648a538a419b7d1b858681145c7f8bc"
 		},
 		{
 			"ImportPath": "github.com/cryptix/goBoom",
@@ -51,7 +51,7 @@
 		},
 		{
 			"ImportPath": "github.com/gorilla/mux",
-			"Rev": "e444e69cbd2e2e3e0749a2f3c717cec491552bbf"
+			"Rev": "8096f47503459bcc74d1f4c487b7e6e42e5746b5"
 		},
 		{
 			"ImportPath": "github.com/gorilla/securecookie",
@@ -63,7 +63,7 @@
 		},
 		{
 			"ImportPath": "github.com/jmoiron/modl",
-			"Rev": "ce209f72100d7847b268ca96169cbe8702827708"
+			"Rev": "b0cda508e4027c836cf78bd482a3edd0458b6d2f"
 		},
 		{
 			"ImportPath": "github.com/jmoiron/sqlx",
@@ -72,8 +72,8 @@
 		},
 		{
 			"ImportPath": "github.com/lib/pq",
-			"Comment": "go1.0-cutoff-13-g19eeca3",
-			"Rev": "19eeca3e30d2577b1761db471ec130810e67f532"
+			"Comment": "go1.0-cutoff-28-g72d960f",
+			"Rev": "72d960fe96ac86dfd376b0de7ca81c0334838d0b"
 		},
 		{
 			"ImportPath": "github.com/mitchellh/mapstructure",
@@ -85,7 +85,7 @@
 		},
 		{
 			"ImportPath": "github.com/stretchr/graceful",
-			"Rev": "8e780ba3fe3d3e7ab15fc52e3d60a996587181dc"
+			"Rev": "b1ca10802470b95c441491251c86e95da25e29b8"
 		},
 		{
 			"ImportPath": "github.com/stretchr/pat/stop",
@@ -93,19 +93,19 @@
 		},
 		{
 			"ImportPath": "golang.org/x/crypto/bcrypt",
-			"Rev": "4ed45ec682102c643324fae5dff8dab085b6c300"
+			"Rev": "1351f936d976c60a0a48d728281922cf63eafb8d"
 		},
 		{
 			"ImportPath": "golang.org/x/crypto/blowfish",
-			"Rev": "4ed45ec682102c643324fae5dff8dab085b6c300"
+			"Rev": "1351f936d976c60a0a48d728281922cf63eafb8d"
 		},
 		{
 			"ImportPath": "golang.org/x/crypto/pbkdf2",
-			"Rev": "4ed45ec682102c643324fae5dff8dab085b6c300"
+			"Rev": "1351f936d976c60a0a48d728281922cf63eafb8d"
 		},
 		{
 			"ImportPath": "golang.org/x/net/netutil",
-			"Rev": "d46df1aba1c84278851452caf6b455d9139859de"
+			"Rev": "6dc0abcce25682504770fa9a7a6705bbfdebfa48"
 		},
 		{
 			"ImportPath": "gopkg.in/unrolled/secure.v1",

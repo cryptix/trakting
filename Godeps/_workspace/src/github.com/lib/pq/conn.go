@@ -10,7 +10,6 @@ import (
 	"encoding/binary"
 	"errors"
 	"fmt"
-	"github.com/lib/pq/oid"
 	"io"
 	"io/ioutil"
 	"net"
@@ -22,6 +21,8 @@ import (
 	"strings"
 	"time"
 	"unicode"
+
+	"github.com/lib/pq/oid"
 )
 
 // Common error types
@@ -212,17 +213,17 @@ func DialOpen(d Dialer, name string) (_ driver.Conn, err error) {
 	cn.buf = bufio.NewReader(cn.c)
 	cn.startup(o)
 	// reset the deadline, in case one was set (see dial)
-	err = cn.c.SetDeadline(time.Time{})
+	if timeout := o.Get("connect_timeout"); timeout != "" && timeout != "0" {
+		err = cn.c.SetDeadline(time.Time{})
+	}
 	return cn, err
 }
 
 func dial(d Dialer, o values) (net.Conn, error) {
 	ntw, addr := network(o)
 
-	timeout := o.Get("connect_timeout")
-
 	// Zero or not specified means wait indefinitely.
-	if timeout != "" && timeout != "0" {
+	if timeout := o.Get("connect_timeout"); timeout != "" && timeout != "0" {
 		seconds, err := strconv.ParseInt(timeout, 10, 0)
 		if err != nil {
 			return nil, fmt.Errorf("invalid value for parameter connect_timeout: %s", err)
@@ -436,6 +437,9 @@ func (cn *conn) Commit() (err error) {
 
 	_, commandTag, err := cn.simpleExec("COMMIT")
 	if err != nil {
+		if cn.isInTransaction() {
+			cn.bad = true
+		}
 		return err
 	}
 	if commandTag != "COMMIT" {
@@ -455,6 +459,9 @@ func (cn *conn) Rollback() (err error) {
 	cn.checkIsInTransaction(true)
 	_, commandTag, err := cn.simpleExec("ROLLBACK")
 	if err != nil {
+		if cn.isInTransaction() {
+			cn.bad = true
+		}
 		return err
 	}
 	if commandTag != "ROLLBACK" {

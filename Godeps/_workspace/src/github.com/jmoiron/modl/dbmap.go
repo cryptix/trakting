@@ -111,49 +111,31 @@ func (m *DbMap) AddTable(i interface{}, name ...string) *TableMap {
 	tmap := &TableMap{gotype: t, TableName: Name, dbmap: m, mapper: m.mapper}
 	tmap.setupHooks(i)
 
-	tmap.Columns = columnMaps(t, tmap, nil)
-	for _, cm := range tmap.Columns {
+	n := t.NumField()
+	tmap.Columns = make([]*ColumnMap, 0, n)
+	for i := 0; i < n; i++ {
+		f := t.Field(i)
+		columnName := f.Tag.Get("db")
+		if columnName == "" {
+			columnName = sqlx.NameMapper(f.Name)
+		}
+
+		cm := &ColumnMap{
+			ColumnName: columnName,
+			Transient:  columnName == "-",
+			fieldName:  f.Name,
+			gotype:     f.Type,
+			table:      tmap,
+		}
+		tmap.Columns = append(tmap.Columns, cm)
 		if cm.fieldName == "Version" {
-			tmap.version = cm
+			tmap.version = tmap.Columns[len(tmap.Columns)-1]
 		}
 	}
 	m.tables = append(m.tables, tmap)
 
 	return tmap
 
-}
-
-func columnMaps(t reflect.Type, tmap *TableMap, parentFieldIdx []int) []*ColumnMap {
-	var cols []*ColumnMap
-	for i := 0; i < t.NumField(); i++ {
-		f := t.Field(i)
-		name := f.Tag.Get("db")
-		if f.Anonymous {
-			cols = append(cols, columnMaps(f.Type, tmap, makeFieldIdx(parentFieldIdx, i))...)
-		} else {
-			if name == "" {
-				name = sqlx.NameMapper(f.Name)
-			}
-			cols = append(cols, &ColumnMap{
-				ColumnName: name,
-				Transient:  name == "-",
-				fieldName:  f.Name,
-				fieldIdx:   makeFieldIdx(parentFieldIdx, i),
-				gotype:     f.Type,
-				table:      tmap,
-			})
-		}
-	}
-	return cols
-}
-
-// makeFieldIdx returns a new slice whose elements are equal to
-// append(parent, i).
-func makeFieldIdx(parent []int, i int) []int {
-	s := make([]int, len(parent)+1)
-	copy(s, parent)
-	s[len(s)-1] = i
-	return s
 }
 
 // AddTableWithName adds a new mapping of the interface to a table name.
