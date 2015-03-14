@@ -4,11 +4,11 @@ import (
 	"net/http"
 
 	"github.com/cryptix/go/http/render"
-	"github.com/cryptix/trakting/store"
+	"github.com/cryptix/trakting/types"
 	"github.com/gorilla/mux"
 )
 
-func list(user store.User, w http.ResponseWriter, r *http.Request) error {
+func list(user types.User, w http.ResponseWriter, r *http.Request) error {
 	tracks, err := trackStore.All()
 	if err != nil {
 		return err
@@ -21,7 +21,7 @@ func list(user store.User, w http.ResponseWriter, r *http.Request) error {
 	})
 }
 
-func listByUser(user store.User, w http.ResponseWriter, r *http.Request) error {
+func listByUser(user types.User, w http.ResponseWriter, r *http.Request) error {
 	qry := mux.Vars(r)["user"]
 	if qry == "" {
 		qry = user.Name

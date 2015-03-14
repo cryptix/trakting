@@ -5,18 +5,18 @@ import (
 	"net/http"
 
 	"github.com/cryptix/go/http/render"
-	"github.com/cryptix/trakting/store"
+	"github.com/cryptix/trakting/types"
 )
 
-func userProfile(user store.User, w http.ResponseWriter, r *http.Request) error {
+func userProfile(user types.User, w http.ResponseWriter, r *http.Request) error {
 	return render.Render(w, r, "profile.tmpl", http.StatusOK, struct {
-		User store.User
+		User types.User
 	}{
 		User: user,
 	})
 }
 
-func userUpdate(user store.User, w http.ResponseWriter, r *http.Request) error {
+func userUpdate(user types.User, w http.ResponseWriter, r *http.Request) error {
 	if err := r.ParseForm(); err != nil {
 		return err
 	}

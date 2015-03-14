@@ -2,32 +2,22 @@ package store
 
 import (
 	"errors"
-	"fmt"
 	"time"
 
+	"github.com/cryptix/trakting/types"
 	"github.com/jmoiron/modl"
 )
 
 func init() {
-	DB.AddTable(Track{}).SetKeys(true, "id")
+	DB.AddTable(types.Track{}).SetKeys(true, "id")
 	createSql = append(createSql, `alter table track alter added set default now()`)
-}
-
-type Track struct {
-	ID     int64
-	By     string
-	Name   string
-	BoomID string
-	Added  time.Time
-}
-
-func (t Track) String() string {
-	return fmt.Sprintf("%q (by %s)", t.Name, t.By)
 }
 
 type TrackStore struct {
 	dbh modl.SqlExecutor
 }
+
+var _ types.TrackService = (*TrackStore)(nil)
 
 func NewTrackStore() (*TrackStore, error) {
 	if DBH == nil {
@@ -37,25 +27,25 @@ func NewTrackStore() (*TrackStore, error) {
 	return &TrackStore{DBH}, nil
 }
 
-func (t *TrackStore) Add(tr Track) error {
+func (t *TrackStore) Add(tr types.Track) error {
 	tr.Added = time.Now()
 	return t.dbh.Insert(&tr)
 }
 
-func (t *TrackStore) Get(boomID string) (Track, error) {
-	var track Track
+func (t *TrackStore) Get(boomID string) (types.Track, error) {
+	var track types.Track
 	err := t.dbh.SelectOne(&track, `SELECT * FROM "track" WHERE BoomID = $1`, boomID)
 	return track, err
 }
 
-func (t *TrackStore) All() ([]Track, error) {
-	var tracks []Track
+func (t *TrackStore) All() ([]types.Track, error) {
+	var tracks []types.Track
 	err := t.dbh.Select(&tracks, `SELECT * FROM "track" ORDER BY added DESC`)
 	return tracks, err
 }
 
-func (t *TrackStore) ByUserName(name string) ([]Track, error) {
-	var tracks []Track
+func (t *TrackStore) ByUserName(name string) ([]types.Track, error) {
+	var tracks []types.Track
 	err := t.dbh.Select(&tracks, `SELECT * FROM "track" WHERE by = $1 ORDER BY added DESC`, name)
 	return tracks, err
 }

@@ -7,24 +7,24 @@ import (
 	"github.com/cryptix/go/http/auth"
 	"github.com/jmoiron/modl"
 	"golang.org/x/crypto/bcrypt"
+
+	"github.com/cryptix/trakting/types"
 )
 
 func init() {
-	gob.Register(User{}) // for auth
-	DB.AddTable(User{}).SetKeys(true, "id")
+	gob.Register(types.User{}) // for auth
+	DB.AddTable(types.User{}).SetKeys(true, "id")
 	createSql = append(createSql, `alter table "user" ADD UNIQUE (name)`)
-}
-
-type User struct {
-	ID     int64
-	Name   string
-	Level  int
-	PwHash []byte
 }
 
 type UserStore struct {
 	dbh modl.SqlExecutor
 }
+
+var (
+	_ types.UserService = (*UserStore)(nil)
+	_ auth.Auther       = (*UserStore)(nil)
+)
 
 func NewUserStore() (*UserStore, error) {
 	if DBH == nil {
@@ -36,7 +36,7 @@ func NewUserStore() (*UserStore, error) {
 
 func (u *UserStore) Add(name, passw string, level int) error {
 	var err error
-	user := User{
+	user := types.User{
 		Name:  name,
 		Level: level,
 	}
@@ -49,7 +49,7 @@ func (u *UserStore) Add(name, passw string, level int) error {
 }
 
 func (u *UserStore) Check(name, pass string) (interface{}, error) {
-	var user User
+	var user types.User
 	err := u.dbh.SelectOne(&user, `SELECT * from "user" WHERE Name = $1`, name)
 	if err != nil {
 		return nil, err
@@ -66,7 +66,7 @@ func (u *UserStore) Check(name, pass string) (interface{}, error) {
 func (u *UserStore) ChangePassword(id int64, newpw string) error {
 	var (
 		err  error
-		user User
+		user types.User
 	)
 
 	err = u.dbh.Get(&user, id)

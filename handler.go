@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/cryptix/go/http/render"
-	"github.com/cryptix/trakting/store"
+	"github.com/cryptix/trakting/types"
 	"github.com/gorilla/mux"
 )
 
@@ -39,7 +39,7 @@ func pushMuxVarsToReqUrl(next http.Handler) http.Handler {
 	})
 }
 
-type handlerWithUser func(user store.User, rw http.ResponseWriter, req *http.Request) error
+type handlerWithUser func(user types.User, rw http.ResponseWriter, req *http.Request) error
 
 func wrapAuthedHandler(h handlerWithUser) func(http.ResponseWriter, *http.Request) error {
 	return func(w http.ResponseWriter, r *http.Request) error {
@@ -47,7 +47,7 @@ func wrapAuthedHandler(h handlerWithUser) func(http.ResponseWriter, *http.Reques
 		if err != nil {
 			return err
 		}
-		user, ok := i.(store.User)
+		user, ok := i.(types.User)
 		if !ok {
 			return errors.New("user type conversion error")
 		}
@@ -87,15 +87,15 @@ func Handler(m *mux.Router) http.Handler {
 	return m
 }
 
-func uploadForm(user store.User, w http.ResponseWriter, r *http.Request) error {
+func uploadForm(user types.User, w http.ResponseWriter, r *http.Request) error {
 	return render.Render(w, r, "upload.tmpl", http.StatusOK, struct {
-		User store.User
+		User types.User
 	}{
 		User: user,
 	})
 }
 
-func upload(user store.User, w http.ResponseWriter, r *http.Request) error {
+func upload(user types.User, w http.ResponseWriter, r *http.Request) error {
 	ct := r.Header.Get("Content-Type")
 	if !strings.HasPrefix(ct, "multipart/form-data;") {
 		return errors.New("illegal content-type")
@@ -116,7 +116,7 @@ func upload(user store.User, w http.ResponseWriter, r *http.Request) error {
 		return errors.New("no stat returned.. really weird error")
 	}
 
-	track := store.Track{
+	track := types.Track{
 		By:     user.Name,
 		Name:   stat[0].Name(),
 		BoomID: stat[0].ID,
@@ -131,7 +131,7 @@ func upload(user store.User, w http.ResponseWriter, r *http.Request) error {
 	return nil
 }
 
-func listen(user store.User, w http.ResponseWriter, r *http.Request) error {
+func listen(user types.User, w http.ResponseWriter, r *http.Request) error {
 	id := r.URL.Query().Get("t")
 	if id == "" {
 		return errors.New("missing id parameter")
@@ -143,8 +143,8 @@ func listen(user store.User, w http.ResponseWriter, r *http.Request) error {
 	}
 
 	var data = struct {
-		User  store.User
-		Track store.Track
+		User  types.User
+		Track types.Track
 	}{
 		User:  user,
 		Track: t,
