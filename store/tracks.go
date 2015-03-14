@@ -17,7 +17,7 @@ type TrackStore struct {
 	dbh modl.SqlExecutor
 }
 
-var _ types.TrackService = (*TrackStore)(nil)
+var _ types.Tracker = (*TrackStore)(nil)
 
 func NewTrackStore() (*TrackStore, error) {
 	if DBH == nil {

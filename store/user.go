@@ -22,8 +22,8 @@ type UserStore struct {
 }
 
 var (
-	_ types.UserService = (*UserStore)(nil)
-	_ auth.Auther       = (*UserStore)(nil)
+	_ types.Userer = (*UserStore)(nil)
+	_ auth.Auther  = (*UserStore)(nil)
 )
 
 func NewUserStore() (*UserStore, error) {

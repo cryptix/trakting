@@ -3,6 +3,12 @@ package types
 import (
 	"fmt"
 	"time"
+
+	"gopkg.in/errgo.v1"
+)
+
+var (
+	ErrEmptyTrackName = errgo.New("empty name")
 )
 
 type Track struct {
@@ -17,7 +23,7 @@ func (t Track) String() string {
 	return fmt.Sprintf("%q (by %s)", t.Name, t.By)
 }
 
-type TrackService interface {
+type Tracker interface {
 	Add(Track) error
 	Get(id string) (Track, error)
 	All() ([]Track, error)
