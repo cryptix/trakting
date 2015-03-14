@@ -4,17 +4,24 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"net/rpc"
 	"strconv"
 	"strings"
 
 	"github.com/cryptix/go/http/render"
-	"github.com/cryptix/trakting/types"
 	"github.com/gorilla/mux"
+	"golang.org/x/net/websocket"
+	"gopkg.in/errgo.v1"
+
+	"github.com/cryptix/trakting/rpcServer"
+	"github.com/cryptix/trakting/types"
 )
 
 const parentUploadFolder = "24RWR71O"
 
+//go:generate gopherjs build -m -o public/js/app.js github.com/cryptix/trakting/frontend
 //go:generate go-bindata -pkg=$GOPACKAGE tmpl/... public/...
+
 func init() {
 	render.Init(Asset, []string{"tmpl/base.tmpl", "tmpl/navbar.tmpl"})
 	render.AddTemplates([]string{
@@ -61,18 +68,41 @@ func Handler(m *mux.Router) http.Handler {
 	}
 
 	m.Path("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		to := "/list"
 		if _, err := ah.AuthenticateRequest(r); err != nil {
-			to = "/start"
+			l.WithField("addr", r.RemoteAddr).Error(errgo.Notef(err, "AuthenticateRequest failed"))
+			http.Redirect(w, r, "/start", http.StatusTemporaryRedirect)
+			return
 		}
 
-		http.Redirect(w, r, to, http.StatusTemporaryRedirect)
+		fmt.Fprint(w, `<!doctype html>
+<html lang="en" data-framework="jquery">
+<head>
+	<title>Trakting</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<link rel="stylesheet" href="/public/css/bootstrap.min.css">
+	<link rel="stylesheet" href="/public/css/tt.css">
+    <link rel="shortcut icon" type="image/png" href="/public/images/favicon.png">
+</head>
+<body>
+	<div id="app"></div>
+	<script type="text/javascript" src="/public/js/jquery-2.1.0.min.js"></script>
+	<script type="text/javascript" src="/public/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/public/js/app.js"></script>
+</body>
+</html>`)
 	})
-	m.Get(Start).Handler(render.StaticHTML("index.tmpl"))
 
+	m.Path("/wsrpc").Handler(websocket.Handler(wsRpcHandler))
+
+	m.Get(Start).Handler(render.StaticHTML("index.tmpl"))
 	m.Get(AuthLogin).HandlerFunc(ah.Authorize)
 	m.Get(AuthLogout).HandlerFunc(ah.Logout)
 
+	// protected
+	// TODO: port these to new gopherjs frontend
 	m.Get(List).Handler(render.HTML(wrapAuthedHandler(list)))
 	m.Get(ListByUser).Handler(render.HTML(wrapAuthedHandler(listByUser)))
 
@@ -85,6 +115,46 @@ func Handler(m *mux.Router) http.Handler {
 	m.Get(UserUpdate).Handler(render.HTML(wrapAuthedHandler(userUpdate)))
 
 	return m
+}
+
+func wsRpcHandler(conn *websocket.Conn) {
+	l = l.WithField("addr", conn.Request().RemoteAddr)
+	i, err := ah.AuthenticateRequest(conn.Request())
+	defer func() {
+		if err != nil {
+			l.WithField("err", err).Error("wsRPC AuthenticateRequest failed")
+			fmt.Fprintln(conn, err)
+			conn.Close()
+		}
+	}()
+	if err != nil {
+		return
+	}
+	user, ok := i.(types.User)
+	if !ok {
+		err = errgo.New("user type conversion error")
+		return
+	}
+
+	s := rpc.NewServer()
+
+	ts, err := rpcServer.NewTrackService(user, trackStore)
+	if !ok {
+		err = errgo.Notef(err, "NewTrackService failed")
+		return
+	}
+	s.RegisterName("TrackService", ts)
+
+	us, e := rpcServer.NewUserService(user, userStore)
+	if e != nil {
+		err = errgo.Notef(err, "NewTrackService failed")
+		return
+	}
+	s.RegisterName("UserService", us)
+
+	fmt.Fprintln(conn, "OK")
+	conn.PayloadType = websocket.BinaryFrame
+	s.ServeConn(conn)
 }
 
 func uploadForm(user types.User, w http.ResponseWriter, r *http.Request) error {
