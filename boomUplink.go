@@ -14,13 +14,13 @@ var boomProxy = &httputil.ReverseProxy{
 
 		id := req.URL.Query().Get("id")
 		if id == "" {
-			l.Critical("boomProxy id missing")
+			l.Warningln("boomProxy id missing")
 			return
 		}
 
 		link, err := boomClient.FS.Download(id)
 		if err != nil {
-			l.Criticalf("boomProxy Download failed: %v", err)
+			l.Errorf("boomProxy Download failed: %v", err)
 			return
 		}
 

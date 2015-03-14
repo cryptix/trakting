@@ -111,7 +111,7 @@ func upload(user store.User, w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 
-	l.Noticef("uplink done: %v", stat)
+	l.WithField("stat", stat).Infof("uplink done")
 	if len(stat) != 1 {
 		return errors.New("no stat returned.. really weird error")
 	}

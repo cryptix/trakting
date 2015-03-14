@@ -68,10 +68,10 @@ func main() {
 func createDbCmd(ctx *cli.Context) {
 	if ctx.Bool("drop") {
 		store.Drop()
-		l.Notice("db dropped")
+		l.Info("db dropped")
 	}
 	store.Create()
-	l.Notice("db created")
+	l.Info("db created")
 }
 
 func addUserCmd(ctx *cli.Context) {
@@ -89,5 +89,5 @@ func addUserCmd(ctx *cli.Context) {
 	pass := a.Tail()[0]
 
 	logging.CheckFatal(userStore.Add(user, pass, ctx.Int("level")))
-	l.Notice("User added.")
+	l.Info("User added.")
 }

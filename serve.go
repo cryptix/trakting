@@ -1,6 +1,7 @@
 package main
 
 import (
+	"net"
 	"net/http"
 	"os"
 	"time"
@@ -15,7 +16,6 @@ import (
 	"github.com/elazarl/go-bindata-assetfs"
 	"github.com/gorilla/securecookie"
 	"github.com/gorilla/sessions"
-	"github.com/stretchr/graceful"
 	"gopkg.in/unrolled/secure.v1"
 )
 
@@ -33,7 +33,7 @@ func serveCmd(ctx *cli.Context) {
 		os.Getenv("OBOOM_PW"))
 	logging.CheckFatal(err)
 
-	l.Noticef("boomClient.Login done\n")
+	l.Info("boomClient.Login done")
 
 	var s store.Settings
 
@@ -41,7 +41,7 @@ func serveCmd(ctx *cli.Context) {
 	logging.CheckFatal(err)
 
 	if len(s.HashKey) < 32 || len(s.BlockKey) < 32 {
-		l.Critical("Warning! cookie keys too short, generating new..")
+		l.Error("Warning! cookie keys too short, generating new..")
 		s.HashKey = securecookie.GenerateRandomKey(32)
 		s.BlockKey = securecookie.GenerateRandomKey(32)
 	}
@@ -79,10 +79,11 @@ func serveCmd(ctx *cli.Context) {
 		ContentTypeNosniff:    true,
 		BrowserXssFilter:      true,
 		ContentSecurityPolicy: "default-src 'self'",
+		IsDevelopment:         true,
 	})
 	app := negroni.New(
 		negroni.NewRecovery(),
-		logging.NewNegroni("trakting"),
+		logging.NewNegroni(l.WithField("module", "http")),
 	)
 	app.Use(negroni.HandlerFunc(secuirtyHeaders.HandlerFuncWithNext))
 
@@ -96,12 +97,8 @@ func serveCmd(ctx *cli.Context) {
 	app.UseHandler(Handler(r))
 
 	listenAddr := ":" + os.Getenv("PORT")
-	l.Notice("Listening on", listenAddr)
+	lis, err := net.Listen("tcp", listenAddr)
+	l.Info("Listening on", lis.Addr())
 
-	srv := &graceful.Server{
-		Timeout: 1 * time.Minute,
-		Server:  &http.Server{Addr: listenAddr, Handler: app},
-	}
-	// heroku has it's own ssl reverseproxy
-	logging.CheckFatal(srv.ListenAndServe())
+	logging.CheckFatal(http.Serve(lis, app))
 }
