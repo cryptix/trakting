@@ -16,6 +16,7 @@ func (u *User) String() string {
 type Userer interface {
 	Add(name, passw string, level int) error
 	ChangePassword(id int64, newpw string) error
+	Current() (*User, error)
 }
 
 type ArgAddUser struct {

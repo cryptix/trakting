@@ -34,3 +34,11 @@ func (u *users) ChangePassword(id int64, passw string) error {
 	}
 	return u.client.Call("UserService.ChangePassword", args, nil)
 }
+
+func (u *users) Current() (*types.User, error) {
+	var user types.User
+	if err := u.client.Call("UserService.Current", "", &user); err != nil {
+		return nil, err
+	}
+	return &user, nil
+}

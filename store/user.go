@@ -7,6 +7,7 @@ import (
 	"github.com/cryptix/go/http/auth"
 	"github.com/jmoiron/modl"
 	"golang.org/x/crypto/bcrypt"
+	"gopkg.in/errgo.v1"
 
 	"github.com/cryptix/trakting/types"
 )
@@ -81,4 +82,8 @@ func (u *UserStore) ChangePassword(id int64, newpw string) error {
 
 	_, err = u.dbh.Update(&user)
 	return err
+}
+
+func (u *UserStore) Current() (*types.User, error) {
+	return nil, errgo.New("not applicable")
 }

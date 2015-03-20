@@ -28,3 +28,9 @@ func (us *UserService) ChangePassword(args *types.ArgChangePassword, _ *struct{}
 	}
 	return us.db.ChangePassword(args.ID, args.Passw)
 }
+
+func (ts *UserService) Current(args *string, reply *types.User) error {
+	*reply = ts.user
+	reply.PwHash = nil
+	return nil
+}
