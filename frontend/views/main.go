@@ -18,6 +18,38 @@ type PageListeners struct {
 
 func Page(m *model.TrackList, l *PageListeners) dom.Aspect {
 	return dom.Group(
+
+		elem.Navigation(
+			prop.Class("navbar", "navbar-inverse", "navbar-fixed-top"),
+
+			elem.Div(prop.Class("container"),
+
+				elem.Div(prop.Class("navbar-header"),
+
+					// <button type="button" data-toggle="collapse" data-target=".navbar-collapse">
+					elem.Button(prop.Class("navbar-toggle"),
+
+						elem.Span(prop.Class("sr-only"), dom.Text("Toggle navigation")),
+						elem.Span(prop.Class("icon-bar")),
+						elem.Span(prop.Class("icon-bar")),
+						elem.Span(prop.Class("icon-bar")),
+					),
+					elem.Anchor(prop.Class("navbar-brand"), prop.Href("/"), dom.Text("Trakting")),
+				),
+
+				elem.Div(prop.Class("collapse", "navbar-collapse"),
+					elem.UnorderedList(prop.Class("nav", "navbar-nav"),
+						elem.ListItem(elem.Anchor(prop.Href("#/list"), dom.Text("List"))),
+						elem.ListItem(elem.Anchor(prop.Href("#/upload"), dom.Text("Upload"))),
+					),
+					elem.UnorderedList(prop.Class("nav", "navbar-nav", "navbar-right"),
+						elem.ListItem(elem.Anchor(prop.Href("#/profile"), dom.Text("$username"))),
+						elem.ListItem(elem.Anchor(prop.Href("/auth/logout"), dom.Text("Logout"))),
+					),
+				),
+			),
+		),
+
 		elem.Section(
 
 			prop.Id("traktingapp"),
