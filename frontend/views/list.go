@@ -1,63 +1,70 @@
 package views
 
 import (
-	"github.com/soroushjp/humble"
-	"github.com/soroushjp/humble/view"
-	"honnef.co/go/js/console"
+	"github.com/neelance/dom"
+	"github.com/neelance/dom/bind"
+	"github.com/neelance/dom/elem"
+	"github.com/neelance/dom/event"
+	"github.com/neelance/dom/prop"
+	"github.com/neelance/dom/style"
 
-	"github.com/cryptix/trakting/rpcClient"
+	"github.com/cryptix/trakting/frontend/model"
 )
 
-type TrackList struct {
-	humble.Identifier
+func listHeader(m *model.TrackList, l *PageListeners) dom.Aspect {
+	return elem.Header(
+		prop.Id("header"),
 
-	Navbar *Navbar
-	Client *rpcClient.Client
+		elem.Header1(
+			dom.Text("Trackting"),
+		),
+		elem.Form(
+			style.Margin(style.Px(0)),
+			dom.PreventDefault(event.Submit(l.Search)),
 
-	Tracks []*Track
+			elem.Input(
+				prop.Id("search-track"),
+				prop.Placeholder("What do you want to hear?"),
+				prop.Autofocus(),
+				bind.Value(&m.SearchText, m.Scope),
+			),
+		),
+	)
 }
 
-const (
-	trackListSelector = "ul#tracks"
-)
+func listFooter(m *model.TrackList, l *PageListeners) dom.Aspect {
+	return elem.Footer(
+		prop.Id("footer"),
 
-func (v *TrackList) RenderHTML() string {
-	return `<div id="navbar"></div>
-<div class="container">
-<div class="page-header">
-  <h1>List <small>uploaded by TODO</small></h1>
-</div>
-<ul id="tracks"></ul>
-</div>
-`
-}
+		elem.Span(
+			prop.Id("player-stats"),
 
-func (v *TrackList) OuterTag() string {
-	return "div"
-}
+			elem.Strong(
+				bind.TextFunc(bind.Itoa(m.QueueCount), m.Scope),
+			),
+			bind.IfFunc(func() bool { return m.QueueCount() == 1 }, m.Scope,
+				dom.Text(" track left"),
+			),
+			bind.IfFunc(func() bool { return m.QueueCount() != 1 }, m.Scope,
+				dom.Text(" tracks left"),
+			),
+		),
 
-func (v *TrackList) OnLoad() error {
-	tracks, err := v.Client.Tracks.All()
-	if err != nil {
-		return err
-	}
-	for _, track := range tracks {
-		console.Dir(track)
-		tv := &Track{
-			Track:  track,
-			Parent: v,
-		}
-		v.Tracks = append(v.Tracks, tv)
-	}
+		// elem.UnorderedList(
+		// 	prop.Id("filters"),
+		// 	filterButton("All", model.All, m),
+		// 	filterButton("Active", model.Active, m),
+		// 	filterButton("Completed", model.Completed, m),
+		// ),
 
-	// Add each child view to the DOM
-	for _, tv := range v.Tracks {
-		view.AppendToParentHTML(tv, trackListSelector)
-	}
-
-	v.Navbar, err = NewNavbar("profile", v.Client.Users)
-	if err != nil {
-		return err
-	}
-	return view.ReplaceParentHTML(v.Navbar, "#navbar")
+		// bind.IfFunc(func() bool { return m.CompletedItemCount() != 0 }, m.Scope,
+		// 	elem.Button(
+		// 		prop.Id("clear-completed"),
+		// 		dom.Text("Clear completed ("),
+		// 		bind.TextFunc(bind.Itoa(m.CompletedItemCount), m.Scope),
+		// 		dom.Text(")"),
+		// 		event.Click(l.ClearCompleted),
+		// 	),
+		// ),
+	)
 }

@@ -1,10 +1,12 @@
 package main
 
 import (
-	"github.com/soroushjp/humble/router"
-	"github.com/soroushjp/humble/view"
+	"github.com/cryptix/trakting/rpcClient"
+	"github.com/neelance/dom"
+	"github.com/neelance/dom/bind"
 	"honnef.co/go/js/console"
 
+	"github.com/cryptix/trakting/frontend/model"
 	"github.com/cryptix/trakting/frontend/views"
 	"github.com/cryptix/trakting/frontend/wsclient"
 )
@@ -16,39 +18,52 @@ func main() {
 	}
 	console.Log("rpc connected")
 
-	r := router.New()
+	m := &model.TrackList{
+		Scope: bind.NewScope(),
+	}
 
-	r.HandleFunc("/", func(_ map[string]string) {
-		console.Log("overview")
-		overView := &views.Main{Client: wc}
-		if err := view.ReplaceParentHTML(overView, "#app"); err != nil {
-			panic(err)
+	l := createListeners(m)
+
+	getTracks(wc, m)
+
+	dom.SetTitle("Trakting • Landing")
+	// dom.AddStylesheet("css/tt.css")
+	dom.SetBody(views.Page(m, l))
+
+}
+
+func createListeners(m *model.TrackList) *views.PageListeners {
+	l := &views.PageListeners{}
+
+	l.Search = func(c *dom.EventContext) {
+		console.Log("search...")
+		m.Scope.Digest()
+	}
+	l.TogglePlay = func(t *model.Track) dom.Listener {
+		return func(c *dom.EventContext) {
+			console.Log("toggle track", t.Name)
+			console.Dir(t)
+			m.Scope.Digest()
 		}
-	})
+	}
+	l.QueueAll = func(c *dom.EventContext) {
+		console.Log("queue all tracks")
+		m.Scope.Digest()
+	}
 
-	r.HandleFunc("/list", func(_ map[string]string) {
-		console.Log("list for all")
-		listView := &views.TrackList{Client: wc}
-		if err := view.ReplaceParentHTML(listView, "#app"); err != nil {
-			panic(err)
-		}
-	})
+	return l
+}
 
-	r.HandleFunc("/list/{user}", func(params map[string]string) {
-		user, ok := params["user"]
-		if !ok {
-			console.Warn("no user => all")
-		}
-		console.Log("list for", user)
-	})
+func getTracks(wc *rpcClient.Client, m *model.TrackList) {
+	tracks, err := wc.Tracks.All()
+	if err != nil {
+		panic(err)
+	}
 
-	r.HandleFunc("/profile", func(_ map[string]string) {
-		console.Log("profile..")
-		profView := &views.Profile{Client: wc}
-		if err := view.ReplaceParentHTML(profView, "#app"); err != nil {
-			panic(err)
-		}
-	})
-
-	r.Start()
+	for _, track := range tracks {
+		m.Tracks = append(m.Tracks, &model.Track{
+			Scope: m.Scope,
+			Track: &track,
+		})
+	}
 }
