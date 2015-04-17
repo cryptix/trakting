@@ -27,10 +27,6 @@ func init() {
 	render.AddTemplates([]string{
 		"tmpl/error.tmpl",
 		"tmpl/index.tmpl",
-		"tmpl/list.tmpl",
-		"tmpl/upload.tmpl",
-		"tmpl/listen.tmpl",
-		"tmpl/profile.tmpl",
 	})
 }
 
@@ -44,22 +40,6 @@ func pushMuxVarsToReqUrl(next http.Handler) http.Handler {
 		req.URL.RawQuery = qry.Encode()
 		next.ServeHTTP(rw, req)
 	})
-}
-
-type handlerWithUser func(user types.User, rw http.ResponseWriter, req *http.Request) error
-
-func wrapAuthedHandler(h handlerWithUser) func(http.ResponseWriter, *http.Request) error {
-	return func(w http.ResponseWriter, r *http.Request) error {
-		i, err := ah.AuthenticateRequest(r)
-		if err != nil {
-			return err
-		}
-		user, ok := i.(types.User)
-		if !ok {
-			return errors.New("user type conversion error")
-		}
-		return h(user, w, r)
-	}
 }
 
 func Handler(m *mux.Router) http.Handler {
@@ -77,20 +57,20 @@ func Handler(m *mux.Router) http.Handler {
 		fmt.Fprint(w, `<!doctype html>
 <html lang="en" data-framework="jquery">
 <head>
-	<title>Trakting</title>
+	<title>Trakting * Loading</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta charset="utf-8" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	<link rel="stylesheet" href="/public/css/bootstrap.min.css">
-	<link rel="stylesheet" href="/public/css/tt.css">
+    <link rel="stylesheet" href="/public/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/public/css/tt.css">
     <link rel="shortcut icon" type="image/png" href="/public/images/favicon.png">
+    <script type="text/javascript" src="/public/js/jquery-2.1.0.min.js"></script>
+    <script type="text/javascript" src="/public/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/public/js/app.js"></script>
 </head>
 <body>
 	<div id="app"></div>
-	<script type="text/javascript" src="/public/js/jquery-2.1.0.min.js"></script>
-	<script type="text/javascript" src="/public/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="/public/js/app.js"></script>
 </body>
 </html>`)
 	})
@@ -102,17 +82,9 @@ func Handler(m *mux.Router) http.Handler {
 	m.Get(AuthLogout).HandlerFunc(ah.Logout)
 
 	// protected
-	// TODO: port these to new gopherjs frontend
-	m.Get(List).Handler(render.HTML(wrapAuthedHandler(list)))
-	m.Get(ListByUser).Handler(render.HTML(wrapAuthedHandler(listByUser)))
 
-	m.Get(UploadForm).Handler(render.HTML(wrapAuthedHandler(uploadForm)))
-	m.Get(Upload).Handler(render.Binary(wrapAuthedHandler(upload)))
-	m.Get(Listen).Handler(render.HTML(wrapAuthedHandler(listen)))
+	m.Get(Upload).Handler(render.Binary(upload))
 	m.Get(Fetch).Handler(ah.Authenticate(pushMuxVarsToReqUrl(boomProxy)))
-
-	m.Get(UserProfile).Handler(render.HTML(wrapAuthedHandler(userProfile)))
-	m.Get(UserUpdate).Handler(render.HTML(wrapAuthedHandler(userUpdate)))
 
 	return m
 }
@@ -120,13 +92,13 @@ func Handler(m *mux.Router) http.Handler {
 func wsRpcHandler(conn *websocket.Conn) {
 	l = l.WithField("addr", conn.Request().RemoteAddr)
 	i, err := ah.AuthenticateRequest(conn.Request())
-	defer func() {
+	defer func(err error) {
 		if err != nil {
 			l.WithField("err", err).Error("wsRPC AuthenticateRequest failed")
 			fmt.Fprintln(conn, err)
 			conn.Close()
 		}
-	}()
+	}(err)
 	if err != nil {
 		return
 	}
@@ -147,7 +119,7 @@ func wsRpcHandler(conn *websocket.Conn) {
 
 	us, e := rpcServer.NewUserService(user, userStore)
 	if e != nil {
-		err = errgo.Notef(err, "NewTrackService failed")
+		err = errgo.Notef(err, "NewUserService failed")
 		return
 	}
 	s.RegisterName("UserService", us)
@@ -157,15 +129,16 @@ func wsRpcHandler(conn *websocket.Conn) {
 	s.ServeConn(conn)
 }
 
-func uploadForm(user types.User, w http.ResponseWriter, r *http.Request) error {
-	return render.Render(w, r, "upload.tmpl", http.StatusOK, struct {
-		User types.User
-	}{
-		User: user,
-	})
-}
+func upload(w http.ResponseWriter, r *http.Request) error {
+	i, err := ah.AuthenticateRequest(r)
+	if err != nil {
+		return err
+	}
+	user, ok := i.(types.User)
+	if !ok {
+		return errors.New("user type conversion error")
+	}
 
-func upload(user types.User, w http.ResponseWriter, r *http.Request) error {
 	ct := r.Header.Get("Content-Type")
 	if !strings.HasPrefix(ct, "multipart/form-data;") {
 		return errors.New("illegal content-type")
@@ -199,26 +172,4 @@ func upload(user types.User, w http.ResponseWriter, r *http.Request) error {
 	w.WriteHeader(http.StatusCreated)
 	fmt.Fprintln(w, "Upload done.", stat[0].Name())
 	return nil
-}
-
-func listen(user types.User, w http.ResponseWriter, r *http.Request) error {
-	id := r.URL.Query().Get("t")
-	if id == "" {
-		return errors.New("missing id parameter")
-	}
-
-	t, err := trackStore.Get(id)
-	if err != nil {
-		return err
-	}
-
-	var data = struct {
-		User  types.User
-		Track types.Track
-	}{
-		User:  user,
-		Track: t,
-	}
-
-	return render.Render(w, r, "listen.tmpl", http.StatusOK, data)
 }

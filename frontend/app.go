@@ -1,69 +1,49 @@
 package main
 
 import (
-	"github.com/cryptix/trakting/rpcClient"
+	"time"
+
 	"github.com/neelance/dom"
-	"github.com/neelance/dom/bind"
 	"honnef.co/go/js/console"
 
-	"github.com/cryptix/trakting/frontend/model"
+	"github.com/cryptix/trakting/frontend/controllers"
 	"github.com/cryptix/trakting/frontend/views"
 	"github.com/cryptix/trakting/frontend/wsclient"
+	"github.com/cryptix/trakting/router"
 )
 
 func main() {
 	wc, err := wsclient.New("ws://localhost:3000/wsrpc") // inject correct url somehow
-	if err != nil {
-		panic(err)
-	}
+	check(err)
 	console.Log("rpc connected")
 
-	m := &model.TrackList{
-		Scope: bind.NewScope(),
-	}
+	list, err := controllers.NewList(wc)
+	check(err)
 
-	l := createListeners(m)
+	r, err := router.New(list)
+	// router.Mode("history"),
+	// router.Delay(5*time.Second),
 
-	getTracks(wc, m)
+	check(err)
 
-	dom.SetTitle("Trakting • Landing")
-	// dom.AddStylesheet("css/tt.css")
-	dom.SetBody(views.Page(m, l))
+	r.Add("list", list)
+	r.Add("upload", &views.Upload{})
+	r.Add("profile", &views.Profile{})
 
+	go r.Listen(func(match string, ren router.Renderer) {
+		dom.SetTitle("Trakting • " + match)
+		dom.SetBody(ren.Render())
+	})
+
+	go func() {
+		time.Sleep(1 * time.Second)
+		r.Navigate("start")
+	}()
 }
 
-func createListeners(m *model.TrackList) *views.PageListeners {
-	l := &views.PageListeners{}
-
-	l.Search = func(c *dom.EventContext) {
-		console.Log("search...")
-		m.Scope.Digest()
-	}
-	l.TogglePlay = func(t *model.Track) dom.Listener {
-		return func(c *dom.EventContext) {
-			console.Log("toggle track", t.Name)
-			console.Dir(t)
-			m.Scope.Digest()
-		}
-	}
-	l.QueueAll = func(c *dom.EventContext) {
-		console.Log("queue all tracks")
-		m.Scope.Digest()
-	}
-
-	return l
-}
-
-func getTracks(wc *rpcClient.Client, m *model.TrackList) {
-	tracks, err := wc.Tracks.All()
+func check(err error) {
 	if err != nil {
+		console.Error(err)
 		panic(err)
-	}
-
-	for _, track := range tracks {
-		m.Tracks = append(m.Tracks, &model.Track{
-			Scope: m.Scope,
-			Track: &track,
-		})
 	}
 }
