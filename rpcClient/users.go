@@ -37,8 +37,14 @@ func (u *users) ChangePassword(id int64, passw string) error {
 
 func (u *users) Current() (*types.User, error) {
 	var user types.User
-	if err := u.client.Call("UserService.Current", "", &user); err != nil {
-		return nil, err
+	err := u.client.Call("UserService.Current", "", &user)
+	return &user, err
+}
+
+func (u *users) Check(name, pass string) (interface{}, error) {
+	args := types.ArgAddUser{
+		Name:  name,
+		Passw: pass,
 	}
-	return &user, nil
+	return nil, u.client.Call("UserService.Check", args, nil)
 }

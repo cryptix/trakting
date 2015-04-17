@@ -78,7 +78,7 @@ func (r *Router) Listen(fn func(string, Renderer)) {
 			curr = r.getFragment()
 			console.Log("changed:", curr)
 			if ren, ok := r.Match(curr); ok {
-				console.Warn("matched:", curr)
+				// console.Warn("matched:", curr)
 				fn(curr, ren)
 			} else {
 				console.Warn("not found, defaulting")

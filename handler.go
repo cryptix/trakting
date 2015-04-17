@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
 	"net/rpc"
@@ -20,15 +19,7 @@ import (
 const parentUploadFolder = "24RWR71O"
 
 //go:generate gopherjs build -m -o public/js/app.js github.com/cryptix/trakting/frontend
-//go:generate go-bindata -pkg=$GOPACKAGE tmpl/... public/...
-
-func init() {
-	render.Init(Asset, []string{"tmpl/base.tmpl", "tmpl/navbar.tmpl"})
-	render.AddTemplates([]string{
-		"tmpl/error.tmpl",
-		"tmpl/index.tmpl",
-	})
-}
+//go:generate go-bindata -pkg=$GOPACKAGE public/...
 
 // ugly hack to access mux.Vars in httputil ReverseProxy Director func
 func pushMuxVarsToReqUrl(next http.Handler) http.Handler {
@@ -42,19 +33,8 @@ func pushMuxVarsToReqUrl(next http.Handler) http.Handler {
 	})
 }
 
-func Handler(m *mux.Router) http.Handler {
-	if m == nil {
-		m = mux.NewRouter()
-	}
-
-	m.Path("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if _, err := ah.AuthenticateRequest(r); err != nil {
-			l.WithField("addr", r.RemoteAddr).Error(errgo.Notef(err, "AuthenticateRequest failed"))
-			http.Redirect(w, r, "/start", http.StatusTemporaryRedirect)
-			return
-		}
-
-		fmt.Fprint(w, `<!doctype html>
+const (
+	loadHTML = `<!doctype html>
 <html lang="en" data-framework="jquery">
 <head>
 	<title>Trakting * Loading</title>
@@ -69,20 +49,59 @@ func Handler(m *mux.Router) http.Handler {
     <script type="text/javascript" src="/public/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="/public/js/app.js"></script>
 </head>
+<body></body>
+</html>`
+
+	loginHTML = `<!doctype html>
+<html lang="en" data-framework="jquery">
+<head>
+	<title>Trakting * Loading</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <link rel="stylesheet" href="/public/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/public/css/signin.css">
+    <link rel="shortcut icon" type="image/png" href="/public/images/favicon.png">
+    <script type="text/javascript" src="/public/js/jquery-2.1.0.min.js"></script>
+    <script type="text/javascript" src="/public/js/bootstrap.min.js"></script>
+</head>
 <body>
-	<div id="app"></div>
+<div class="container">
+	<form class="form-signin" method="POST" action="/auth/login" >
+		<h2 class="form-signin-heading">Please sign in</h2>
+		<label for="inputUser" class="sr-only">Username</label>
+		<input name="user" type="text" id="inputUser" class="form-control" placeholder="Username" required="" autofocus="">
+		<label for="inputPassword" class="sr-only">Password</label>
+		<input name="pass" type="password" id="inputPassword" class="form-control" placeholder="Password" required="">
+		<button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+	</form>
+</div>
 </body>
-</html>`)
+</html>`
+)
+
+func Handler(m *mux.Router) http.Handler {
+	if m == nil {
+		m = mux.NewRouter()
+	}
+
+	m.Path("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if _, err := ah.AuthenticateRequest(r); err != nil {
+			l.WithField("addr", r.RemoteAddr).Error(errgo.Notef(err, "AuthenticateRequest failed"))
+			fmt.Fprintf(w, loginHTML)
+			return
+		}
+
+		fmt.Fprint(w, loadHTML)
 	})
 
 	m.Path("/wsrpc").Handler(websocket.Handler(wsRpcHandler))
 
-	m.Get(Start).Handler(render.StaticHTML("index.tmpl"))
 	m.Get(AuthLogin).HandlerFunc(ah.Authorize)
 	m.Get(AuthLogout).HandlerFunc(ah.Logout)
 
 	// protected
-
 	m.Get(Upload).Handler(render.Binary(upload))
 	m.Get(Fetch).Handler(ah.Authenticate(pushMuxVarsToReqUrl(boomProxy)))
 
@@ -136,12 +155,12 @@ func upload(w http.ResponseWriter, r *http.Request) error {
 	}
 	user, ok := i.(types.User)
 	if !ok {
-		return errors.New("user type conversion error")
+		return errgo.New("user type conversion error")
 	}
 
 	ct := r.Header.Get("Content-Type")
 	if !strings.HasPrefix(ct, "multipart/form-data;") {
-		return errors.New("illegal content-type")
+		return errgo.New("illegal content-type")
 	}
 
 	clen, err := strconv.ParseInt(r.Header.Get("Content-Length"), 10, 64)
@@ -156,7 +175,7 @@ func upload(w http.ResponseWriter, r *http.Request) error {
 
 	l.WithField("stat", stat).Infof("uplink done")
 	if len(stat) != 1 {
-		return errors.New("no stat returned.. really weird error")
+		return errgo.New("no stat returned.. really weird error")
 	}
 
 	track := types.Track{

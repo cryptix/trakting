@@ -29,8 +29,13 @@ func (us *UserService) ChangePassword(args *types.ArgChangePassword, _ *struct{}
 	return us.db.ChangePassword(args.ID, args.Passw)
 }
 
-func (ts *UserService) Current(args *string, reply *types.User) error {
-	*reply = ts.user
+func (us *UserService) Current(args *string, reply *types.User) error {
+	*reply = us.user
 	reply.PwHash = nil
 	return nil
+}
+
+func (us *UserService) Check(args *types.ArgAddUser, _ *struct{}) error {
+	_, err := us.db.Check(args.Name, args.Passw)
+	return err
 }

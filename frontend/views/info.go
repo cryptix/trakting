@@ -32,7 +32,7 @@ func navbar() dom.Aspect {
 					elem.ListItem(elem.Anchor(prop.Href("#upload"), dom.Text("Upload"))),
 				),
 				elem.UnorderedList(prop.Class("nav", "navbar-nav", "navbar-right"),
-					elem.ListItem(elem.Anchor(prop.Href("#profile"), dom.Text("$username"))),
+					elem.ListItem(elem.Anchor(prop.Href("#profile"), dom.Text("Profile"))),
 					elem.ListItem(elem.Anchor(prop.Href("/auth/logout"), dom.Text("Logout"))),
 				),
 			),

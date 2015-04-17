@@ -9,7 +9,6 @@ import (
 	"github.com/codegangsta/cli"
 	"github.com/codegangsta/negroni"
 	"github.com/cryptix/go/http/auth"
-	"github.com/cryptix/go/http/render"
 	"github.com/cryptix/go/logging"
 	"github.com/cryptix/goBoom"
 	"github.com/cryptix/trakting/store"
@@ -55,15 +54,11 @@ func serveCmd(ctx *cli.Context) {
 			Path:     "/",
 			MaxAge:   86400 * 30,
 			HttpOnly: true,
+			Secure:   true,
 		},
 	}
 
 	sessStore.Options.Secure = ctx.Bool("ssl")
-
-	render.Reload = ctx.Bool("reload")
-	r := App()
-	render.SetAppRouter(r)
-	render.Load()
 
 	ah, err = auth.NewHandler(userStore,
 		auth.SetStore(sessStore),
@@ -72,21 +67,22 @@ func serveCmd(ctx *cli.Context) {
 	)
 	logging.CheckFatal(err)
 
-	secuirtyHeaders := secure.New(secure.Options{
-		AllowedHosts:          []string{"trakting.herokuapp.com"},
-		STSSeconds:            315360000,
-		FrameDeny:             true,
-		ContentTypeNosniff:    true,
-		BrowserXssFilter:      true,
-		ContentSecurityPolicy: "default-src 'self'",
-		IsDevelopment:         true,
-	})
 	app := negroni.New(
 		negroni.NewRecovery(),
 		logging.NewNegroni(l.WithField("module", "http")),
 	)
+	secuirtyHeaders := secure.New(secure.Options{
+		AllowedHosts:       []string{"trakting.herokuapp.com"},
+		STSSeconds:         315360000,
+		FrameDeny:          true,
+		ContentTypeNosniff: true,
+		BrowserXssFilter:   true,
+		// ContentSecurityPolicy: "default-src 'self'",
+		// IsDevelopment:         true,
+	})
 	app.Use(negroni.HandlerFunc(secuirtyHeaders.HandlerFuncWithNext))
 
+	r := App()
 	r.PathPrefix("/public/").Handler(http.StripPrefix("/public/", http.FileServer(
 		&assetfs.AssetFS{
 			Asset:    Asset,
@@ -102,3 +98,39 @@ func serveCmd(ctx *cli.Context) {
 
 	logging.CheckFatal(http.Serve(lis, app))
 }
+
+// 	certPem, err := ioutil.ReadFile("server.crt")
+// 	logging.CheckFatal(err)
+
+// 	keyPem, err := ioutil.ReadFile("server.key")
+// 	logging.CheckFatal(err)
+
+// 	cert, err := tls.X509KeyPair(certPem, keyPem)
+// 	logging.CheckFatal(err)
+
+// 	srv := &http.Server{
+// 		TLSConfig: &tls.Config{
+// 			Certificates: []tls.Certificate{cert},
+// 		},
+// 		Handler: app,
+// 	}
+// 	http2.ConfigureServer(srv, &http2.Server{})
+// 	ln, err := net.Listen("tcp", ":443")
+// 	logging.CheckFatal(err)
+
+// 	err = srv.Serve(tls.NewListener(tcpKeepAliveListener{ln.(*net.TCPListener)}, srv.TLSConfig))
+// 	logging.CheckFatal(err)
+
+// type tcpKeepAliveListener struct {
+// 	*net.TCPListener
+// }
+
+// func (ln tcpKeepAliveListener) Accept() (c net.Conn, err error) {
+// 	tc, err := ln.AcceptTCP()
+// 	if err != nil {
+// 		return
+// 	}
+// 	tc.SetKeepAlive(true)
+// 	tc.SetKeepAlivePeriod(3 * time.Minute)
+// 	return tc, nil
+// }

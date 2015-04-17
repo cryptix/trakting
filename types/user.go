@@ -1,6 +1,10 @@
 package types
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/cryptix/go/http/auth"
+)
 
 type User struct {
 	ID     int64
@@ -17,6 +21,7 @@ type Userer interface {
 	Add(name, passw string, level int) error
 	ChangePassword(id int64, newpw string) error
 	Current() (*User, error)
+	auth.Auther
 }
 
 type ArgAddUser struct {

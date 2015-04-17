@@ -22,10 +22,7 @@ type UserStore struct {
 	dbh modl.SqlExecutor
 }
 
-var (
-	_ types.Userer = (*UserStore)(nil)
-	_ auth.Auther  = (*UserStore)(nil)
-)
+var _ types.Userer = (*UserStore)(nil)
 
 func NewUserStore() (*UserStore, error) {
 	if DBH == nil {

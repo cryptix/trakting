@@ -10,11 +10,7 @@ import (
 	"github.com/cryptix/trakting/rpcClient"
 )
 
-type List struct {
-	*views.List
-}
-
-func NewList(c *rpcClient.Client) (*List, error) {
+func NewList(c *rpcClient.Client) (*views.List, error) {
 	m := model.NewTrackList(c)
 
 	lis := &views.ListListeners{}
@@ -37,7 +33,5 @@ func NewList(c *rpcClient.Client) (*List, error) {
 		return nil, errgo.Notef(err, "getTracks failed")
 	}
 
-	v := views.NewList(m, lis)
-
-	return &List{v}, nil
+	return views.NewList(m, lis), nil
 }
