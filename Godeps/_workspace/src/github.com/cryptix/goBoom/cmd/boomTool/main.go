@@ -25,7 +25,7 @@ func init() {
 		os.Getenv("OBOOM_PW"))
 	logging.CheckFatal(err)
 
-	l.Noticef("Login worked.(took %v)", time.Since(start))
+	l.Infof("Login worked.(took %v)", time.Since(start))
 }
 
 func main() {
@@ -37,12 +37,12 @@ func main() {
 			Usage: "list...",
 			Action: func(c *cli.Context) {
 				wd := c.Args().First()
-				l.Notice("Listing ", wd)
+				l.Info("Listing ", wd)
 
 				ls, err := client.Info.Ls(wd)
 				logging.CheckFatal(err)
 				for _, item := range ls.Items {
-					l.Noticef("%8s - %s", item.ID, item.Name())
+					l.Infof("%8s - %s", item.ID, item.Name())
 				}
 			},
 		},
@@ -57,11 +57,11 @@ func main() {
 				logging.CheckFatal(err)
 				defer file.Close()
 
-				l.Notice("uploading ", file)
-				stats, err := client.FS.Upload(filepath.Base(fname), file)
+				l.Info("uploading ", file)
+				stats, err := client.FS.Upload("1", filepath.Base(fname), file)
 				logging.CheckFatal(err)
 				for _, item := range stats {
-					l.Noticef("%8s - %s", item.ID, item.Name())
+					l.Infof("%8s - %s", item.ID, item.Name())
 				}
 			},
 		},
@@ -90,7 +90,7 @@ func main() {
 			Flags: []cli.Flag{cli.BoolFlag{Name: "trash,t"}},
 			Action: func(c *cli.Context) {
 				item := c.Args().First()
-				l.Notice("deleting ", item)
+				l.Info("deleting ", item)
 
 				err := client.FS.Rm(c.Bool("trash"), item)
 				logging.CheckFatal(err)
@@ -107,10 +107,10 @@ func main() {
 					l.Fatal("no item id")
 				}
 
-				l.Notice("Requesting link for", item)
+				l.Info("Requesting link for", item)
 				url, err := client.FS.Download(item)
 				logging.CheckFatal(err)
-				l.Notice(url.String())
+				l.Info(url.String())
 			},
 		},
 	}

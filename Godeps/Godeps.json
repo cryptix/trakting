@@ -1,41 +1,45 @@
 {
 	"ImportPath": "github.com/cryptix/trakting",
-	"GoVersion": "go1.4.1",
+	"GoVersion": "go1.4.2",
+	"Packages": [
+		"./..."
+	],
 	"Deps": [
 		{
+			"ImportPath": "github.com/Sirupsen/logrus",
+			"Comment": "v0.7.3",
+			"Rev": "55eb11d21d2a31a3cc93838241d04800f52e823d"
+		},
+		{
 			"ImportPath": "github.com/bitly/go-simplejson",
-			"Comment": "v0.4.3-28-g3378bdc",
-			"Rev": "3378bdcb5cebedcbf8b5750edee28010f128fe24"
+			"Comment": "v0.4.3-30-g18db6e6",
+			"Rev": "18db6e68d8fd9cbf2e8ebe4c81a78b96fd9bf05a"
 		},
 		{
 			"ImportPath": "github.com/codegangsta/cli",
-			"Comment": "1.2.0-87-g8ce64f1",
-			"Rev": "8ce64f19ff08029a69d11b7615c9b591245450ad"
+			"Comment": "1.2.0-95-g9b2bd2b",
+			"Rev": "9b2bd2b3489748d4d0a204fa4eb2ee9e89e0ebc6"
 		},
 		{
 			"ImportPath": "github.com/codegangsta/negroni",
-			"Comment": "v0.1-55-g1dd3ab0",
-			"Rev": "1dd3ab0ff59e13f5b73dcbf70703710aebe50d2f"
-		},
-		{
-			"ImportPath": "github.com/cryptix/go-logging",
-			"Rev": "ebeafa47f30896a82cd9ebed8e50c2ad19c513ee"
+			"Comment": "v0.1-70-gc7477ad",
+			"Rev": "c7477ad8e330bef55bf1ebe300cf8aa67c492d1b"
 		},
 		{
 			"ImportPath": "github.com/cryptix/go/http/auth",
-			"Rev": "cf7e3cc69648a538a419b7d1b858681145c7f8bc"
+			"Rev": "1c96b030739b07e2d679f54b2dbb4afae60fcb95"
 		},
 		{
 			"ImportPath": "github.com/cryptix/go/http/render",
-			"Rev": "cf7e3cc69648a538a419b7d1b858681145c7f8bc"
+			"Rev": "1c96b030739b07e2d679f54b2dbb4afae60fcb95"
 		},
 		{
 			"ImportPath": "github.com/cryptix/go/logging",
-			"Rev": "cf7e3cc69648a538a419b7d1b858681145c7f8bc"
+			"Rev": "1c96b030739b07e2d679f54b2dbb4afae60fcb95"
 		},
 		{
 			"ImportPath": "github.com/cryptix/goBoom",
-			"Rev": "8aae9283833ed53590811a0295259b97d6ed64e5"
+			"Rev": "c46a313b619a700ab36ec6d27f9e4797dfa24fa2"
 		},
 		{
 			"ImportPath": "github.com/cryptix/gocrayons",
@@ -44,6 +48,14 @@
 		{
 			"ImportPath": "github.com/elazarl/go-bindata-assetfs",
 			"Rev": "fe5a90c9bd2990734f4928be5d3aeebb00f61f70"
+		},
+		{
+			"ImportPath": "github.com/gopherjs/gopherjs/js",
+			"Rev": "07b4ddaa0f33b0ce1207eaf5c8664fd57d419e28"
+		},
+		{
+			"ImportPath": "github.com/gopherjs/websocket",
+			"Rev": "867cdcb6edcfa907c935102a8b91c3d85317747c"
 		},
 		{
 			"ImportPath": "github.com/gorilla/context",
@@ -67,49 +79,81 @@
 		},
 		{
 			"ImportPath": "github.com/jmoiron/sqlx",
-			"Comment": "sqlx-v1.0-67-g69738bd",
-			"Rev": "69738bd209812c5a381786011aff17944a384554"
+			"Comment": "sqlx-v1.1-12-gb507f47",
+			"Rev": "b507f47f230c5a3aff4a6c48f810132433b71510"
+		},
+		{
+			"ImportPath": "github.com/kr/fs",
+			"Rev": "2788f0dbd16903de03cb8186e5c7d97b69ad387b"
 		},
 		{
 			"ImportPath": "github.com/lib/pq",
-			"Comment": "go1.0-cutoff-28-g72d960f",
-			"Rev": "72d960fe96ac86dfd376b0de7ca81c0334838d0b"
+			"Comment": "go1.0-cutoff-38-ge51fec1",
+			"Rev": "e51fec16be7847e24d0270a5ce1f95cf2482b5e9"
 		},
 		{
 			"ImportPath": "github.com/mitchellh/mapstructure",
 			"Rev": "442e588f213303bec7936deba67901f8fc8f18b1"
 		},
 		{
+			"ImportPath": "github.com/neelance/dom",
+			"Rev": "77d3ee5a4cef8556e947ddd1ba2bb86938126af2"
+		},
+		{
 			"ImportPath": "github.com/oxtoacart/bpool",
 			"Rev": "923fab21d0624a469b877a05bbfc562c1c26c663"
 		},
 		{
-			"ImportPath": "github.com/stretchr/graceful",
-			"Rev": "b1ca10802470b95c441491251c86e95da25e29b8"
+			"ImportPath": "github.com/stretchr/testify/assert",
+			"Rev": "e897f97d666c44ddbc131f4121c2961034b4c1b4"
 		},
 		{
-			"ImportPath": "github.com/stretchr/pat/stop",
-			"Rev": "f7fe051f2b9bcaca162b38de4f93c9a8457160b9"
+			"ImportPath": "github.com/stretchr/testify/require",
+			"Rev": "e897f97d666c44ddbc131f4121c2961034b4c1b4"
 		},
 		{
 			"ImportPath": "golang.org/x/crypto/bcrypt",
-			"Rev": "1351f936d976c60a0a48d728281922cf63eafb8d"
+			"Rev": "bc65b9074c1a76699f4ef665802d4a1c56e22495"
 		},
 		{
 			"ImportPath": "golang.org/x/crypto/blowfish",
-			"Rev": "1351f936d976c60a0a48d728281922cf63eafb8d"
+			"Rev": "bc65b9074c1a76699f4ef665802d4a1c56e22495"
 		},
 		{
 			"ImportPath": "golang.org/x/crypto/pbkdf2",
-			"Rev": "1351f936d976c60a0a48d728281922cf63eafb8d"
+			"Rev": "bc65b9074c1a76699f4ef665802d4a1c56e22495"
 		},
 		{
-			"ImportPath": "golang.org/x/net/netutil",
-			"Rev": "6dc0abcce25682504770fa9a7a6705bbfdebfa48"
+			"ImportPath": "golang.org/x/net/websocket",
+			"Rev": "84ba27dd5b2d8135e9da1395277f2c9333a2ffda"
+		},
+		{
+			"ImportPath": "golang.org/x/tools/godoc/vfs",
+			"Rev": "77d380c9e6de4a0e740c35f0f4ebe0117a766c44"
+		},
+		{
+			"ImportPath": "gopkg.in/errgo.v1",
+			"Rev": "81357a83344ddd9f7772884874e5622c2a3da21c"
 		},
 		{
 			"ImportPath": "gopkg.in/unrolled/secure.v1",
 			"Rev": "7c5d20f5d23b4825dfe542a006b37d6bdb5950f6"
+		},
+		{
+			"ImportPath": "honnef.co/go/js/console",
+			"Rev": "105276c4355828b6126d4d7d0bf8b09d02606686"
+		},
+		{
+			"ImportPath": "honnef.co/go/js/dom",
+			"Rev": "5f25eefafd064224f9e3f99d71796c68addbcf86"
+		},
+		{
+			"ImportPath": "honnef.co/go/js/util",
+			"Rev": "96b8dd9d16214b6cd9d8c8e84b3a375da4688108"
+		},
+		{
+			"ImportPath": "sourcegraph.com/sourcegraph/rwvfs",
+			"Rev": "451122bc19b9f1cdfeb2f1fdccadbc33ef5aa9f7"
 		}
 	]
 }

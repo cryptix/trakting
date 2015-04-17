@@ -91,13 +91,11 @@ func (s *FilesystemService) Upload(parent, fname string, input io.Reader) ([]Ite
 		return nil, err
 	}
 
-	_, err = io.Copy(part, input)
-	if err != nil {
+	if _, err := io.Copy(part, input); err != nil {
 		return nil, err
 	}
 
-	err = writer.Close()
-	if err != nil {
+	if err = writer.Close(); err != nil {
 		return nil, err
 	}
 

@@ -152,7 +152,7 @@ func DialOpen(d Dialer, name string) (_ driver.Conn, err error) {
 		o.Set(k, v)
 	}
 
-	if strings.HasPrefix(name, "postgres://") {
+	if strings.HasPrefix(name, "postgres://") || strings.HasPrefix(name, "postgresql://") {
 		name, err = ParseURL(name)
 		if err != nil {
 			return nil, err
@@ -221,6 +221,10 @@ func DialOpen(d Dialer, name string) (_ driver.Conn, err error) {
 
 func dial(d Dialer, o values) (net.Conn, error) {
 	ntw, addr := network(o)
+	// SSL is not necessary or supported over UNIX domain sockets
+	if ntw == "unix" {
+		o["sslmode"] = "disable"
+	}
 
 	// Zero or not specified means wait indefinitely.
 	if timeout := o.Get("connect_timeout"); timeout != "" && timeout != "0" {

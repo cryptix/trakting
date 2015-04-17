@@ -4,28 +4,32 @@ import (
 	"log"
 
 	"github.com/cryptix/goBoom"
-	"github.com/kr/pretty"
+	"github.com/shurcooL/go-goon"
 )
 
 func main() {
 	client := goBoom.NewClient(nil)
 
-	code, resp, err := client.User.Login("el.rey.de.wonns@gmail.com", "70e878c4")
+	resp, err := client.User.Login("el.rey.de.wonns@gmail.com", "Tinchen!123")
 	check(err)
 
-	log.Printf("Login Response[%d] %# v\n", code, pretty.Formatter(resp))
+	log.Println("Login Response ok")
+	goon.Dump(resp)
 
-	code, duMap, err := client.Info.Du()
+	duMap, err := client.Info.Du()
 	check(err)
-	log.Printf("Du() Response[%d] %# v\n", code, pretty.Formatter(duMap))
+	log.Printf("Du() Response:")
+	goon.Dump(duMap)
 
-	code, info, err := client.Info.Info("1", "1C")
+	info, err := client.Info.Info("1", "1C")
 	check(err)
-	log.Printf("Info() Response[%d] %# v\n", code, pretty.Formatter(info))
+	log.Printf("Info() Response:")
+	goon.Dump(info)
 
-	code, ls, err := client.Info.Ls("1")
+	ls, err := client.Info.Ls("1")
 	check(err)
-	log.Printf("Ls(#2) Response[%d] %# v\n", code, pretty.Formatter(ls))
+	log.Printf("Ls(#2) Response:")
+	goon.Dump(ls)
 }
 
 func check(err error) {
