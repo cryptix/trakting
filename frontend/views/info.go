@@ -6,7 +6,7 @@ import (
 	"github.com/neelance/dom/prop"
 )
 
-func navbar() dom.Aspect {
+func Navbar() dom.Aspect {
 	return elem.Navigation(prop.Class("navbar", "navbar-inverse", "navbar-fixed-top"),
 
 		elem.Div(prop.Class("container"),
@@ -48,7 +48,7 @@ func pageHeader(head, lead string) dom.Aspect {
 
 }
 
-func footer() dom.Aspect {
+func Footer() dom.Aspect {
 	return elem.Footer(prop.Class("tt-footer"),
 
 		elem.Paragraph(

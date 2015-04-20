@@ -26,65 +26,62 @@ func NewProfile(m *model.Profile, l *ProfileListeners) *Profile {
 }
 
 func (v *Profile) Render() dom.Aspect {
-	return dom.Group(
-		navbar(),
-		elem.Div(prop.Class("container"),
+	return elem.Div(prop.Class("container"),
 
-			pageHeader("Profile", "Hey "+v.m.Name+", you can change your password here."),
-			elem.Div(prop.Class("row")),
+		pageHeader("Profile", "Hey "+v.m.Name+", you can change your password here."),
+		elem.Div(prop.Class("row")),
 
-			elem.Form(
+		elem.Form(
 
-				dom.PreventDefault(event.Submit(v.l.Save)),
+			dom.PreventDefault(event.Submit(v.l.Save)),
 
-				elem.Div(prop.Class("form-group"),
-					elem.Label(prop.Class("control-label"),
-						dom.Text("Current Password")),
+			elem.Div(prop.Class("form-group"),
+				elem.Label(prop.Class("control-label"),
+					dom.Text("Current Password")),
 
-					elem.Input(prop.Class("form-control"),
-						prop.Type(prop.TypePassword),
-						// dom.SetProperty("autofocus", ""), Doesnt work..
-						dom.SetProperty("placeholder", "SuperSecret"),
-						bind.Value(&v.m.Current, v.m.Scope)),
+				elem.Input(prop.Class("form-control"),
+					prop.Type(prop.TypePassword),
+					// dom.SetProperty("autofocus", ""), Doesnt work..
+					dom.SetProperty("placeholder", "SuperSecret"),
+					bind.Value(&v.m.Current, v.m.Scope)),
 
-					hasError(&v.m.CurrentErr, v.m.Scope),
-					bind.IfPtr(&v.m.Success, v.m.Scope, prop.Class("has-success")),
-				),
+				hasError(&v.m.CurrentErr, v.m.Scope),
+				bind.IfPtr(&v.m.Success, v.m.Scope, prop.Class("has-success")),
+			),
 
-				elem.Div(prop.Class("form-group"),
-					elem.Label(prop.Class("control-label"),
-						dom.Text("New Password")),
+			elem.Div(prop.Class("form-group"),
+				elem.Label(prop.Class("control-label"),
+					dom.Text("New Password")),
 
-					elem.Input(prop.Class("form-control"),
-						prop.Type(prop.TypePassword),
-						dom.SetProperty("placeholder", "NewPW"),
-						bind.Value(&v.m.New, v.m.Scope)),
+				elem.Input(prop.Class("form-control"),
+					prop.Type(prop.TypePassword),
+					dom.SetProperty("placeholder", "NewPW"),
+					bind.Value(&v.m.New, v.m.Scope)),
 
-					hasError(&v.m.NewErr, v.m.Scope),
-					bind.IfPtr(&v.m.Success, v.m.Scope, prop.Class("has-success")),
-				),
+				hasError(&v.m.NewErr, v.m.Scope),
+				bind.IfPtr(&v.m.Success, v.m.Scope, prop.Class("has-success")),
+			),
 
-				elem.Div(prop.Class("form-group"),
-					elem.Label(prop.Class("control-label"),
-						dom.Text("Repeat")),
+			elem.Div(prop.Class("form-group"),
+				elem.Label(prop.Class("control-label"),
+					dom.Text("Repeat")),
 
-					elem.Input(prop.Class("form-control"),
-						prop.Type(prop.TypePassword),
-						dom.SetProperty("placeholder", "Repeat"),
-						bind.Value(&v.m.Repeat, v.m.Scope)),
+				elem.Input(prop.Class("form-control"),
+					prop.Type(prop.TypePassword),
+					dom.SetProperty("placeholder", "Repeat"),
+					bind.Value(&v.m.Repeat, v.m.Scope)),
 
-					hasError(&v.m.RepeatErr, v.m.Scope),
-					bind.IfPtr(&v.m.Success, v.m.Scope, prop.Class("has-success")),
-				),
+				hasError(&v.m.RepeatErr, v.m.Scope),
+				bind.IfPtr(&v.m.Success, v.m.Scope, prop.Class("has-success")),
+			),
 
-				bind.IfPtr(&v.m.Success, v.m.Scope,
-					dom.Text("Saved. please "),
-					elem.Anchor(prop.Href("/auth/logout"), dom.Text("Logout")),
-					dom.Text(" to use your new password now."),
-				),
-				elem.Button(prop.Class("btn", "btn-primary", "btn-block"),
-					dom.Text("Save"),
-				),
+			bind.IfPtr(&v.m.Success, v.m.Scope,
+				dom.Text("Saved. please "),
+				elem.Anchor(prop.Href("/auth/logout"), dom.Text("Logout")),
+				dom.Text(" to use your new password now."),
+			),
+			elem.Button(prop.Class("btn", "btn-primary", "btn-block"),
+				dom.Text("Save"),
 			),
 		),
 	)
