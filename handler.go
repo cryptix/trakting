@@ -22,7 +22,7 @@ const parentUploadFolder = "24RWR71O"
 //go:generate go-bindata -pkg=$GOPACKAGE public/...
 
 // ugly hack to access mux.Vars in httputil ReverseProxy Director func
-func pushMuxVarsToReqUrl(next http.Handler) http.Handler {
+func pushMuxVarsToReqURL(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
 		qry := req.URL.Query()
 		for key, value := range mux.Vars(req) {
@@ -47,9 +47,12 @@ const (
     <link rel="shortcut icon" type="image/png" href="/public/images/favicon.png">
     <script type="text/javascript" src="/public/js/jquery-2.1.0.min.js"></script>
     <script type="text/javascript" src="/public/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="/public/js/bootstrapProgressbar.min.js"></script>
     <script type="text/javascript" src="/public/js/app.js"></script>
 </head>
-<body></body>
+<body>
+<a href="#wtf">Click me if you can.</a>
+</body>
 </html>`
 
 	loginHTML = `<!doctype html>
@@ -81,6 +84,7 @@ const (
 </html>`
 )
 
+// Handler hooks up the passed mux.Rotuer to this apps http handlers
 func Handler(m *mux.Router) http.Handler {
 	if m == nil {
 		m = mux.NewRouter()
@@ -96,19 +100,19 @@ func Handler(m *mux.Router) http.Handler {
 		fmt.Fprint(w, loadHTML)
 	})
 
-	m.Path("/wsrpc").Handler(websocket.Handler(wsRpcHandler))
+	m.Path("/wsrpc").Handler(websocket.Handler(wsRPCHandler))
 
 	m.Get(AuthLogin).HandlerFunc(ah.Authorize)
 	m.Get(AuthLogout).HandlerFunc(ah.Logout)
 
 	// protected
 	m.Get(Upload).Handler(render.Binary(upload))
-	m.Get(Fetch).Handler(ah.Authenticate(pushMuxVarsToReqUrl(boomProxy)))
+	m.Get(Fetch).Handler(ah.Authenticate(pushMuxVarsToReqURL(boomProxy)))
 
 	return m
 }
 
-func wsRpcHandler(conn *websocket.Conn) {
+func wsRPCHandler(conn *websocket.Conn) {
 	l = l.WithField("addr", conn.Request().RemoteAddr)
 	i, err := ah.AuthenticateRequest(conn.Request())
 	defer func(err error) {
