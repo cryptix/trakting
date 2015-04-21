@@ -28,7 +28,7 @@ type FakeTracker struct {
 	AllStub        func() ([]types.Track, error)
 	allMutex       sync.RWMutex
 	allArgsForCall []struct{}
-	allReturns     struct {
+	allReturns struct {
 		result1 []types.Track
 		result2 error
 	}

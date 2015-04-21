@@ -21,6 +21,9 @@ var (
 	fakeUserer  = new(FakeUserer)
 )
 
+//go:generate counterfeiter -o fake_userer.go ../types Userer
+//go:generate counterfeiter -o fake_tracker.go ../types Tracker
+
 func TestMain(m *testing.M) {
 	testServer = rpc.NewServer()
 

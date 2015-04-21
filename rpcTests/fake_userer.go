@@ -27,6 +27,23 @@ type FakeUserer struct {
 	changePasswordReturns struct {
 		result1 error
 	}
+	CurrentStub        func() (*types.User, error)
+	currentMutex       sync.RWMutex
+	currentArgsForCall []struct{}
+	currentReturns struct {
+		result1 *types.User
+		result2 error
+	}
+	CheckStub        func(user, pass string) (interface{}, error)
+	checkMutex       sync.RWMutex
+	checkArgsForCall []struct {
+		user string
+		pass string
+	}
+	checkReturns struct {
+		result1 interface{}
+		result2 error
+	}
 }
 
 func (fake *FakeUserer) Add(name string, passw string, level int) error {
@@ -94,6 +111,65 @@ func (fake *FakeUserer) ChangePasswordReturns(result1 error) {
 	fake.changePasswordReturns = struct {
 		result1 error
 	}{result1}
+}
+
+func (fake *FakeUserer) Current() (*types.User, error) {
+	fake.currentMutex.Lock()
+	fake.currentArgsForCall = append(fake.currentArgsForCall, struct{}{})
+	fake.currentMutex.Unlock()
+	if fake.CurrentStub != nil {
+		return fake.CurrentStub()
+	} else {
+		return fake.currentReturns.result1, fake.currentReturns.result2
+	}
+}
+
+func (fake *FakeUserer) CurrentCallCount() int {
+	fake.currentMutex.RLock()
+	defer fake.currentMutex.RUnlock()
+	return len(fake.currentArgsForCall)
+}
+
+func (fake *FakeUserer) CurrentReturns(result1 *types.User, result2 error) {
+	fake.CurrentStub = nil
+	fake.currentReturns = struct {
+		result1 *types.User
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakeUserer) Check(user string, pass string) (interface{}, error) {
+	fake.checkMutex.Lock()
+	fake.checkArgsForCall = append(fake.checkArgsForCall, struct {
+		user string
+		pass string
+	}{user, pass})
+	fake.checkMutex.Unlock()
+	if fake.CheckStub != nil {
+		return fake.CheckStub(user, pass)
+	} else {
+		return fake.checkReturns.result1, fake.checkReturns.result2
+	}
+}
+
+func (fake *FakeUserer) CheckCallCount() int {
+	fake.checkMutex.RLock()
+	defer fake.checkMutex.RUnlock()
+	return len(fake.checkArgsForCall)
+}
+
+func (fake *FakeUserer) CheckArgsForCall(i int) (string, string) {
+	fake.checkMutex.RLock()
+	defer fake.checkMutex.RUnlock()
+	return fake.checkArgsForCall[i].user, fake.checkArgsForCall[i].pass
+}
+
+func (fake *FakeUserer) CheckReturns(result1 interface{}, result2 error) {
+	fake.CheckStub = nil
+	fake.checkReturns = struct {
+		result1 interface{}
+		result2 error
+	}{result1, result2}
 }
 
 var _ types.Userer = new(FakeUserer)
