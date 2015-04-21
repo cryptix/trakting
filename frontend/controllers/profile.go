@@ -3,6 +3,7 @@ package controllers
 import (
 	"github.com/neelance/dom"
 	"github.com/neelance/dom/bind"
+	"gopkg.in/errgo.v1"
 	"honnef.co/go/js/console"
 
 	"github.com/cryptix/trakting/frontend/model"
@@ -17,7 +18,7 @@ func NewProfile(c *rpcClient.Client) (*views.Profile, error) {
 
 	u, err := c.Users.Current()
 	if err != nil {
-		return nil, err
+		return nil, errgo.Notef(err, "Users.Current() failed")
 	}
 
 	m.Name = u.Name

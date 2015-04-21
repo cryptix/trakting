@@ -15,8 +15,8 @@ import (
 
 var document = hdom.GetWindow().Document()
 
-// const wshost = "wss://trakting.herokuapp.com/wsrpc"
-const wshost = "ws://localhost:3000/wsrpc"
+// const wshost = "ws://localhost:3000/wsrpc"
+const wshost = "wss://trakting.herokuapp.com/wsrpc"
 
 func main() {
 	wc, err := wsclient.New(wshost) // inject correct url somehow
@@ -24,6 +24,9 @@ func main() {
 	console.Log("rpc connected")
 
 	list, err := controllers.NewList(wc)
+	check(err)
+
+	upload, err := controllers.NewUpload(wc)
 	check(err)
 
 	profile, err := controllers.NewProfile(wc)
@@ -35,7 +38,7 @@ func main() {
 	check(err)
 
 	r.Add("list", list)
-	r.Add("upload", &views.Upload{})
+	r.Add("upload", upload)
 	r.Add("profile", profile)
 
 	go r.Listen(func(match string, ren router.Renderer) {
