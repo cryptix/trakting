@@ -46,12 +46,20 @@
 			"Rev": "ee59c27728001e150279063c77b5519813a17a0a"
 		},
 		{
+			"ImportPath": "github.com/dustin/go-humanize",
+			"Rev": "b198514c204f20799b91c93b6ffd8b26be04c2c9"
+		},
+		{
 			"ImportPath": "github.com/elazarl/go-bindata-assetfs",
 			"Rev": "fe5a90c9bd2990734f4928be5d3aeebb00f61f70"
 		},
 		{
 			"ImportPath": "github.com/gopherjs/gopherjs/js",
-			"Rev": "07b4ddaa0f33b0ce1207eaf5c8664fd57d419e28"
+			"Rev": "38e6f4b84111fed1ada21bd3777cdb811a4bb30b"
+		},
+		{
+			"ImportPath": "github.com/gopherjs/jquery",
+			"Rev": "fb45a6e6cc96d16a42442777c841ff86a3ce11a7"
 		},
 		{
 			"ImportPath": "github.com/gopherjs/websocket",
@@ -88,8 +96,8 @@
 		},
 		{
 			"ImportPath": "github.com/lib/pq",
-			"Comment": "go1.0-cutoff-38-ge51fec1",
-			"Rev": "e51fec16be7847e24d0270a5ce1f95cf2482b5e9"
+			"Comment": "go1.0-cutoff-40-g8910d1c",
+			"Rev": "8910d1c3a4bda5c97c50bc38543953f1f1e1f8bb"
 		},
 		{
 			"ImportPath": "github.com/mitchellh/mapstructure",
@@ -113,23 +121,23 @@
 		},
 		{
 			"ImportPath": "golang.org/x/crypto/bcrypt",
-			"Rev": "bc65b9074c1a76699f4ef665802d4a1c56e22495"
+			"Rev": "8b27f58b78dbd60e9a26b60b0d908ea642974b6d"
 		},
 		{
 			"ImportPath": "golang.org/x/crypto/blowfish",
-			"Rev": "bc65b9074c1a76699f4ef665802d4a1c56e22495"
+			"Rev": "8b27f58b78dbd60e9a26b60b0d908ea642974b6d"
 		},
 		{
 			"ImportPath": "golang.org/x/crypto/pbkdf2",
-			"Rev": "bc65b9074c1a76699f4ef665802d4a1c56e22495"
+			"Rev": "8b27f58b78dbd60e9a26b60b0d908ea642974b6d"
 		},
 		{
 			"ImportPath": "golang.org/x/net/websocket",
-			"Rev": "84ba27dd5b2d8135e9da1395277f2c9333a2ffda"
+			"Rev": "169f42267807fe93f4a4b0150583e410aefafe4e"
 		},
 		{
 			"ImportPath": "golang.org/x/tools/godoc/vfs",
-			"Rev": "77d380c9e6de4a0e740c35f0f4ebe0117a766c44"
+			"Rev": "41d9a0e7b2d60d52ef1caf232b081c16af220b44"
 		},
 		{
 			"ImportPath": "gopkg.in/errgo.v1",
