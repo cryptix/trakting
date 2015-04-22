@@ -21,18 +21,6 @@ const parentUploadFolder = "24RWR71O"
 //go:generate gopherjs build -m -o public/js/app.js github.com/cryptix/trakting/frontend
 //go:generate go-bindata -pkg=$GOPACKAGE public/...
 
-// ugly hack to access mux.Vars in httputil ReverseProxy Director func
-func pushMuxVarsToReqURL(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
-		qry := req.URL.Query()
-		for key, value := range mux.Vars(req) {
-			qry.Set(key, value)
-		}
-		req.URL.RawQuery = qry.Encode()
-		next.ServeHTTP(rw, req)
-	})
-}
-
 const (
 	loadHTML = `<!doctype html>
 <html lang="en" data-framework="jquery">
@@ -58,7 +46,7 @@ const (
 	loginHTML = `<!doctype html>
 <html lang="en" data-framework="jquery">
 <head>
-	<title>Trakting * Loading</title>
+	<title>Trakting * Login</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta charset="utf-8" />
@@ -102,7 +90,7 @@ func Handler(m *mux.Router) http.Handler {
 
 	m.Path("/wsrpc").Handler(websocket.Handler(wsRPCHandler))
 	m.Path("/upload").Methods("POST").Handler(render.Binary(upload))
-	m.Path("/fetch/{id}").Methods("GET").Handler(ah.Authenticate(pushMuxVarsToReqURL(boomProxy)))
+	m.Path("/fetch").Methods("GET").Handler(ah.Authenticate(boomProxy))
 
 	m.Path("/auth/login").Methods("POST").HandlerFunc(ah.Authorize)
 	m.Path("/auth/logout").Methods("GET").HandlerFunc(ah.Logout)

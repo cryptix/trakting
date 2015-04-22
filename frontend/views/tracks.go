@@ -54,7 +54,7 @@ func trackElem(track *model.Track, playing func() bool, l *ListListeners) dom.As
 			elem.Audio(
 				dom.SetProperty("controls", "test"),
 				bind.IfFunc(playing, track.Scope,
-					prop.Src(fmt.Sprintf("/fetch/%s", track.BoomID)),
+					prop.Src(fmt.Sprintf("/fetch?id=%s", track.BoomID)),
 				),
 			),
 		),
