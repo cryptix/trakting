@@ -79,7 +79,7 @@ func serveCmd(ctx *cli.Context) {
 		FrameDeny:             true,
 		ContentTypeNosniff:    true,
 		BrowserXssFilter:      true,
-		ContentSecurityPolicy: `default-src 'self'; connect-src 'self' ws://localhost:3000`,
+		ContentSecurityPolicy: `default-src 'self'; connect-src 'self' ws://localhost:3000 wss://trakting.herokuapp.com/wsrpc`,
 	})
 	app.Use(negroni.HandlerFunc(secuirtyHeaders.HandlerFuncWithNext))
 
