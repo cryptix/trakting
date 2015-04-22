@@ -16,7 +16,7 @@ func NewList(c *rpcClient.Client) (*views.List, error) {
 	lis := &views.ListListeners{}
 
 	lis.Search = func(c *dom.EventContext) {
-		console.Log("search...")
+		console.Log("search..." + m.SearchText)
 		m.Scope.Digest()
 	}
 

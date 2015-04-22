@@ -45,15 +45,25 @@ func (l *List) Render() dom.Aspect {
 				elem.Div(prop.Class("sidebar-module", "sidebar-module-inset"),
 					elem.Header4(dom.Text("About")),
 					elem.Paragraph(dom.Text("wawawawa"), elem.Emphasis(dom.Text("wat"))),
-					elem.Button(prop.Class("btn"), dom.Text("Reload"),
+					elem.Button(prop.Class("btn", "btn-default"),
+						elem.Span(prop.Class("glyphicon", "glyphicon-refresh")),
+						dom.Text("Reload"),
 						event.Click(l.l.Reload)),
 				),
 				elem.Div(prop.Class("sidebar-module"),
 					elem.Header4(dom.Text("Search")),
-					elem.Input(prop.Class("form-control"),
-						dom.SetProperty("disabled", "disabled"),
-						dom.SetProperty("placeholder", "todo.."),
-						prop.Type(prop.TypeText)),
+
+					elem.Form(
+						dom.PreventDefault(event.Submit(l.l.Search)),
+
+						elem.Input(prop.Class("form-control"),
+							// dom.SetProperty("disabled", "disabled"),
+							prop.Placeholder("What do you want to hear?"),
+							prop.Type(prop.TypeText),
+							// prop.Autofocus(),
+							bind.Value(&l.m.SearchText, l.m.Scope),
+						),
+					),
 				),
 				elem.Div(prop.Class("sidebar-module"),
 					elem.Header4(dom.Text("By User")),
@@ -66,29 +76,6 @@ func (l *List) Render() dom.Aspect {
 			),
 		),
 	)
-}
-
-func listHeader(m *model.TrackList, l *ListListeners) dom.Aspect {
-	return elem.Div(prop.Class("container"),
-		elem.Div(prop.Class("page-header"),
-			elem.Header1(dom.Text("Trackting"),
-				elem.Small(dom.Text("Hello")),
-			),
-		),
-	)
-	/*
-		elem.Form(
-			style.Margin(style.Px(0)),
-			dom.PreventDefault(event.Submit(l.Search)),
-
-			elem.Input(
-				prop.Id("search-track"),
-				prop.Placeholder("What do you want to hear?"),
-				prop.Autofocus(),
-				bind.Value(&m.SearchText, m.Scope),
-			),
-		),
-	*/
 }
 
 func listNav(m *model.TrackList, l *ListListeners) dom.Aspect {

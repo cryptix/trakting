@@ -49,13 +49,12 @@ func main() {
 			},
 		},
 	}
-	// app.Action = serveCmd
 
 	logging.SetupLogging(nil)
 
-	var err error
 	store.Connect()
 
+	var err error
 	userStore, err = store.NewUserStore()
 	logging.CheckFatal(err)
 
