@@ -4,6 +4,7 @@ import (
 	"github.com/neelance/dom"
 	"github.com/neelance/dom/bind"
 	"github.com/neelance/dom/elem"
+	"github.com/neelance/dom/event"
 	"github.com/neelance/dom/prop"
 
 	"github.com/cryptix/trakting/frontend/model"
@@ -15,6 +16,7 @@ type List struct {
 }
 
 type ListListeners struct {
+	Reload   dom.Listener
 	Search   dom.Listener
 	Play     func(*model.Track) dom.Listener
 	QueueAll dom.Listener
@@ -43,6 +45,15 @@ func (l *List) Render() dom.Aspect {
 				elem.Div(prop.Class("sidebar-module", "sidebar-module-inset"),
 					elem.Header4(dom.Text("About")),
 					elem.Paragraph(dom.Text("wawawawa"), elem.Emphasis(dom.Text("wat"))),
+					elem.Button(prop.Class("btn"), dom.Text("Reload"),
+						event.Click(l.l.Reload)),
+				),
+				elem.Div(prop.Class("sidebar-module"),
+					elem.Header4(dom.Text("Search")),
+					elem.Input(prop.Class("form-control"),
+						dom.SetProperty("disabled", "disabled"),
+						dom.SetProperty("placeholder", "todo.."),
+						prop.Type(prop.TypeText)),
 				),
 				elem.Div(prop.Class("sidebar-module"),
 					elem.Header4(dom.Text("By User")),

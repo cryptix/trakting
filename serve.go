@@ -13,6 +13,7 @@ import (
 	"github.com/cryptix/goBoom"
 	"github.com/cryptix/trakting/store"
 	"github.com/elazarl/go-bindata-assetfs"
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/securecookie"
 	"github.com/gorilla/sessions"
 	"gopkg.in/unrolled/secure.v1"
@@ -72,24 +73,26 @@ func serveCmd(ctx *cli.Context) {
 		logging.NewNegroni(l.WithField("module", "http")),
 	)
 	secuirtyHeaders := secure.New(secure.Options{
-		AllowedHosts:       []string{"trakting.herokuapp.com"},
-		STSSeconds:         315360000,
-		FrameDeny:          true,
-		ContentTypeNosniff: true,
-		BrowserXssFilter:   true,
-		// ContentSecurityPolicy: "default-src 'self'",
 		// IsDevelopment:         true,
+		AllowedHosts:          []string{"trakting.herokuapp.com"},
+		STSSeconds:            315360000,
+		FrameDeny:             true,
+		ContentTypeNosniff:    true,
+		BrowserXssFilter:      true,
+		ContentSecurityPolicy: `default-src 'self'; connect-src 'self' ws://localhost:3000`,
 	})
 	app.Use(negroni.HandlerFunc(secuirtyHeaders.HandlerFuncWithNext))
 
 	r := App()
-	r.PathPrefix("/public/").Handler(http.StripPrefix("/public/", http.FileServer(
-		&assetfs.AssetFS{
-			Asset:    Asset,
-			AssetDir: AssetDir,
-			Prefix:   "public",
-		},
-	)))
+	r.PathPrefix("/public/").Handler(handlers.CompressHandler(
+		http.StripPrefix("/public/", http.FileServer(
+			&assetfs.AssetFS{
+				Asset:    Asset,
+				AssetDir: AssetDir,
+				Prefix:   "public",
+			},
+		))))
+
 	app.UseHandler(Handler(r))
 
 	listenAddr := ":" + os.Getenv("PORT")

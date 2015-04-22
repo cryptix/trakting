@@ -29,6 +29,14 @@ func NewList(c *rpcClient.Client) (*views.List, error) {
 		}
 	}
 
+	lis.Reload = func(c *dom.EventContext) {
+		console.Log("reload clicked")
+		if err := m.Load(); err != nil {
+			console.Error(err)
+		}
+		m.Scope.Digest()
+	}
+
 	if err := m.Load(); err != nil {
 		return nil, errgo.Notef(err, "getTracks failed")
 	}
