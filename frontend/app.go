@@ -51,13 +51,14 @@ func main() {
 		main.ReplaceChild(div, main.FirstChild())
 	})
 
-	dom.SetTitle("Trakting")
-	dom.SetBody(views.Navbar(), elem.Div(prop.Id("main"), elem.Div()), views.Footer())
-
-	_, ok := r.Match("")
+	ren, ok := r.Match("")
 	if !ok {
-		r.Navigate("list")
+		console.Error("what do?!")
 	}
+
+	dom.SetTitle("Trakting")
+	dom.SetBody(views.Navbar(), elem.Div(prop.Id("main"), ren.Render()), views.Footer())
+
 }
 
 func check(err error) {

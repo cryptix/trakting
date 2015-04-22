@@ -103,6 +103,9 @@ func (r *Router) Match(f string) (Renderer, bool) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	ren, found := r.routes[f]
+	if !found {
+		ren = r.defaultRoute
+	}
 	return ren, found
 }
 
