@@ -51,12 +51,8 @@ func main() {
 		main.ReplaceChild(div, main.FirstChild())
 	})
 
-	ren, ok := r.Match("")
-	if !ok {
-		console.Error("what do?!")
-	}
-
 	dom.SetTitle("Trakting")
+	ren, _ := r.Match("")
 	dom.SetBody(views.Navbar(), elem.Div(prop.Id("main"), ren.Render()), views.Footer())
 
 }
