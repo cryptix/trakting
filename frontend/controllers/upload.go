@@ -113,13 +113,11 @@ func NewUpload(c *rpcClient.Client) (*views.Upload, error) {
 		}
 
 		xhr := xhrConstructor.New()
-		xhr.Set("responseType", "arraybuffer")
 
 		respCh := make(chan *http.Response)
 		errCh := make(chan error)
 
 		// progress callback
-		var bar = jQuery(".progress .progress-bar")
 		xhr.Get("upload").Call("addEventListener", "progress", func(ctx *dom.EventContext) {
 			if ctx.Node.Get("lengthComputable").Bool() {
 				p := ctx.Node.Get("loaded").Int() * 100 / ctx.Node.Get("total").Int()
@@ -163,6 +161,8 @@ func NewUpload(c *rpcClient.Client) (*views.Upload, error) {
 		})
 
 		xhr.Call("open", "POST", "/upload", true)
+		xhr.Set("responseType", "arraybuffer") // Needs to happen after "open" due to bug in Firefox, see https://github.com/gopherjs/gopherjs/pull/213.
+
 		m.UploadInflight = true
 		m.Scope.Digest()
 
