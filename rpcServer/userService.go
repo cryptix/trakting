@@ -39,3 +39,8 @@ func (us *UserService) Check(args *types.ArgAddUser, _ *struct{}) error {
 	_, err := us.db.Check(args.Name, args.Passw)
 	return err
 }
+
+func (us *UserService) List(args *string, reply *[]types.User) (err error) {
+	*reply, err = us.db.List()
+	return
+}

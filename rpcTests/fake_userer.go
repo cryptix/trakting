@@ -34,6 +34,13 @@ type FakeUserer struct {
 		result1 *types.User
 		result2 error
 	}
+	ListStub        func() ([]types.User, error)
+	listMutex       sync.RWMutex
+	listArgsForCall []struct{}
+	listReturns struct {
+		result1 []types.User
+		result2 error
+	}
 	CheckStub        func(user, pass string) (interface{}, error)
 	checkMutex       sync.RWMutex
 	checkArgsForCall []struct {
@@ -134,6 +141,31 @@ func (fake *FakeUserer) CurrentReturns(result1 *types.User, result2 error) {
 	fake.CurrentStub = nil
 	fake.currentReturns = struct {
 		result1 *types.User
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakeUserer) List() ([]types.User, error) {
+	fake.listMutex.Lock()
+	fake.listArgsForCall = append(fake.listArgsForCall, struct{}{})
+	fake.listMutex.Unlock()
+	if fake.ListStub != nil {
+		return fake.ListStub()
+	} else {
+		return fake.listReturns.result1, fake.listReturns.result2
+	}
+}
+
+func (fake *FakeUserer) ListCallCount() int {
+	fake.listMutex.RLock()
+	defer fake.listMutex.RUnlock()
+	return len(fake.listArgsForCall)
+}
+
+func (fake *FakeUserer) ListReturns(result1 []types.User, result2 error) {
+	fake.ListStub = nil
+	fake.listReturns = struct {
+		result1 []types.User
 		result2 error
 	}{result1, result2}
 }

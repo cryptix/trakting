@@ -84,3 +84,12 @@ func (u *UserStore) ChangePassword(id int64, newpw string) error {
 func (u *UserStore) Current() (*types.User, error) {
 	return nil, errgo.New("not applicable")
 }
+
+func (u *UserStore) List() ([]types.User, error) {
+	var users []types.User
+	if err := u.dbh.Select(&users, `SELECT id,name from "user"`); err != nil {
+		return nil, errgo.Notef(err, "userStore.List Select failed")
+	}
+
+	return users, nil
+}

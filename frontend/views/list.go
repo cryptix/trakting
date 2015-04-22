@@ -68,9 +68,16 @@ func (l *List) Render() dom.Aspect {
 				elem.Div(prop.Class("sidebar-module"),
 					elem.Header4(dom.Text("By User")),
 					elem.OrderedList(prop.Class("list-unstyled"),
-						elem.ListItem(elem.Anchor(prop.Href("#by/usr1"), dom.Text("user1"))),
-						elem.ListItem(elem.Anchor(prop.Href("#by/usr2"), dom.Text("user2"))),
-						elem.ListItem(elem.Anchor(prop.Href("#by/usr3"), dom.Text("user3"))),
+						bind.Dynamic(l.m.Scope, func(aspects *bind.Aspects) {
+							for _, user := range l.m.Users {
+								if !aspects.Reuse(user) {
+									aspects.Add(user, elem.ListItem(elem.Anchor(
+										prop.Href("#list/"+user.Name),
+										dom.Text(user.Name))),
+									)
+								}
+							}
+						}),
 					),
 				),
 			),

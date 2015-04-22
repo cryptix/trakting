@@ -41,7 +41,7 @@ func trackElem(track *model.Track, playing func() bool, l *ListListeners) dom.As
 		elem.Paragraph(prop.Class("tt-track-meta"),
 			dom.Text(track.Added.Format("2006-02-01")),
 			dom.Text(" by "),
-			elem.Anchor(prop.Href("#/list/usr1"), dom.Text(track.By)),
+			elem.Anchor(prop.Href("#list/"+track.By), dom.Text(track.By)),
 		),
 
 		elem.Paragraph(prop.Class("tt-track-player"),

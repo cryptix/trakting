@@ -48,3 +48,9 @@ func (u *users) Check(name, pass string) (interface{}, error) {
 	}
 	return nil, u.client.Call("UserService.Check", args, nil)
 }
+
+func (u *users) List() ([]types.User, error) {
+	var users []types.User
+	err := u.client.Call("UserService.List", "", &users)
+	return users, err
+}

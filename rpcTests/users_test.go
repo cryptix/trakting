@@ -3,6 +3,7 @@ package rpcTests
 import (
 	"testing"
 
+	"github.com/cryptix/trakting/types"
 	"github.com/stretchr/testify/require"
 )
 
@@ -23,4 +24,17 @@ func TestUserChangePassw(t *testing.T) {
 	id, passw := fakeUserer.ChangePasswordArgsForCall(0)
 	require.Equal(t, 0, id)
 	require.Equal(t, "testPW", passw)
+}
+
+func TestUserList(t *testing.T) {
+	want := []types.User{
+		{ID: 1, Name: "Hans"},
+		{ID: 2, Name: "Franz"},
+		{ID: 3},
+	}
+	fakeUserer.ListReturns(want, nil)
+	got, e := testClient.Users.List()
+	require.Nil(t, e)
+	require.Equal(t, want, got)
+	require.Equal(t, 1, fakeUserer.ListCallCount())
 }
