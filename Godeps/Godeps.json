@@ -63,7 +63,7 @@
 		},
 		{
 			"ImportPath": "github.com/gopherjs/websocket",
-			"Rev": "867cdcb6edcfa907c935102a8b91c3d85317747c"
+			"Rev": "8c8a1daf8eb22111ffd1f5c8001d23e476a9cd33"
 		},
 		{
 			"ImportPath": "github.com/gorilla/context",
