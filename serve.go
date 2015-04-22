@@ -14,6 +14,7 @@ import (
 	"github.com/cryptix/trakting/store"
 	"github.com/elazarl/go-bindata-assetfs"
 	"github.com/gorilla/handlers"
+	"github.com/gorilla/mux"
 	"github.com/gorilla/securecookie"
 	"github.com/gorilla/sessions"
 	"gopkg.in/unrolled/secure.v1"
@@ -83,7 +84,7 @@ func serveCmd(ctx *cli.Context) {
 	})
 	app.Use(negroni.HandlerFunc(secuirtyHeaders.HandlerFuncWithNext))
 
-	r := App()
+	r := mux.NewRouter()
 	r.PathPrefix("/public/").Handler(handlers.CompressHandler(
 		http.StripPrefix("/public/", http.FileServer(
 			&assetfs.AssetFS{

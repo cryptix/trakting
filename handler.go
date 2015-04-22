@@ -101,13 +101,11 @@ func Handler(m *mux.Router) http.Handler {
 	})
 
 	m.Path("/wsrpc").Handler(websocket.Handler(wsRPCHandler))
+	m.Path("/upload").Methods("POST").Handler(render.Binary(upload))
+	m.Path("/fetch/{id}").Methods("GET").Handler(ah.Authenticate(pushMuxVarsToReqURL(boomProxy)))
 
-	m.Get(AuthLogin).HandlerFunc(ah.Authorize)
-	m.Get(AuthLogout).HandlerFunc(ah.Logout)
-
-	// protected
-	m.Get(Upload).Handler(render.Binary(upload))
-	m.Get(Fetch).Handler(ah.Authenticate(pushMuxVarsToReqURL(boomProxy)))
+	m.Path("/auth/login").Methods("POST").HandlerFunc(ah.Authorize)
+	m.Path("/auth/logout").Methods("GET").HandlerFunc(ah.Logout)
 
 	return m
 }
