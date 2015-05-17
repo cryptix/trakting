@@ -13,18 +13,19 @@ build:
         code: |
           cd 
           go version
-          go get -t -v ./...
+          go get github.com/constabulary/gb/...
+          echo "vendored deps soon.."
+          go get -v ./...
 
     # Build the project
     - script:
-        name: go build
+        name: gb build
         code: |
-          go build ./...
+          gb build
 
     # Test the project
     - script:
         name: go test
         code: |
           go test ./...
-          go test -race github.com/cryptix/trakting/...
           
