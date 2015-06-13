@@ -22,7 +22,7 @@ func TestUserChangePassw(t *testing.T) {
 	require.Nil(t, e)
 	require.Equal(t, 1, fakeUserer.ChangePasswordCallCount())
 	id, passw := fakeUserer.ChangePasswordArgsForCall(0)
-	require.Equal(t, 0, id)
+	require.Equal(t, int64(0), id)
 	require.Equal(t, "testPW", passw)
 }
 
