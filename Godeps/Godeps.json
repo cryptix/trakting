@@ -1,6 +1,6 @@
 {
 	"ImportPath": "github.com/cryptix/trakting",
-	"GoVersion": "devel +cc8f544 Fri Jul 17 03:34:11 2015 +0000",
+	"GoVersion": "go1.4.2",
 	"Deps": [
 		{
 			"ImportPath": "github.com/Sirupsen/logrus",
@@ -24,15 +24,15 @@
 		},
 		{
 			"ImportPath": "github.com/cryptix/go/http/auth",
-			"Rev": "1c96b030739b07e2d679f54b2dbb4afae60fcb95"
+			"Rev": "90032dcd46c5959ed935826ffa82342a2d4e6cd4"
 		},
 		{
 			"ImportPath": "github.com/cryptix/go/http/render",
-			"Rev": "1c96b030739b07e2d679f54b2dbb4afae60fcb95"
+			"Rev": "90032dcd46c5959ed935826ffa82342a2d4e6cd4"
 		},
 		{
 			"ImportPath": "github.com/cryptix/go/logging",
-			"Rev": "1c96b030739b07e2d679f54b2dbb4afae60fcb95"
+			"Rev": "90032dcd46c5959ed935826ffa82342a2d4e6cd4"
 		},
 		{
 			"ImportPath": "github.com/cryptix/goBoom",
@@ -43,16 +43,8 @@
 			"Rev": "ee59c27728001e150279063c77b5519813a17a0a"
 		},
 		{
-			"ImportPath": "github.com/elazarl/go-bindata-assetfs",
-			"Rev": "fe5a90c9bd2990734f4928be5d3aeebb00f61f70"
-		},
-		{
 			"ImportPath": "github.com/gorilla/context",
 			"Rev": "215affda49addc4c8ef7e2534915df2c8c35c6cd"
-		},
-		{
-			"ImportPath": "github.com/gorilla/handlers",
-			"Rev": "a24b39a6a2c8a7af2fe664dd4573205c99904035"
 		},
 		{
 			"ImportPath": "github.com/gorilla/mux",
@@ -110,7 +102,7 @@
 		},
 		{
 			"ImportPath": "golang.org/x/tools/godoc/vfs",
-			"Rev": "41d9a0e7b2d60d52ef1caf232b081c16af220b44"
+			"Rev": "06e42bd9eb281c80b8c04b1c38ece4e33e0df1f3"
 		},
 		{
 			"ImportPath": "gopkg.in/errgo.v1",

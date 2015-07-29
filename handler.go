@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"net/http"
 	"net/rpc"
 	"strconv"
@@ -18,74 +19,37 @@ import (
 
 const parentUploadFolder = "24RWR71O"
 
-//go:generate gopherjs build -m -o public/js/app.js github.com/cryptix/trakting/frontend
-//go:generate go-bindata -pkg=$GOPACKAGE public/...
-
-const (
-	loadHTML = `<!doctype html>
-<html lang="en" data-framework="jquery">
-<head>
-	<title>Trakting * Loading</title>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta charset="utf-8" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <link rel="stylesheet" href="/public/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/public/css/tt.css">
-    <link rel="shortcut icon" type="image/png" href="/public/images/favicon.png">
-    <script type="text/javascript" src="/public/js/jquery-2.1.0.min.js"></script>
-    <script type="text/javascript" src="/public/js/bootstrap.min.js"></script>
-		<script type="text/javascript" src="/public/js/bootstrapProgressbar.min.js"></script>
-    <script type="text/javascript" src="/public/js/app.js"></script>
-</head>
-<body>
-<a href="#wtf">Click me if you can.</a>
-</body>
-</html>`
-
-	loginHTML = `<!doctype html>
-<html lang="en" data-framework="jquery">
-<head>
-	<title>Trakting * Login</title>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta charset="utf-8" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <link rel="stylesheet" href="/public/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/public/css/signin.css">
-    <link rel="shortcut icon" type="image/png" href="/public/images/favicon.png">
-    <script type="text/javascript" src="/public/js/jquery-2.1.0.min.js"></script>
-    <script type="text/javascript" src="/public/js/bootstrap.min.js"></script>
-</head>
-<body>
-<div class="container">
-	<form class="form-signin" method="POST" action="/auth/login" >
-		<h2 class="form-signin-heading">Please sign in</h2>
-		<label for="inputUser" class="sr-only">Username</label>
-		<input name="user" type="text" id="inputUser" class="form-control" placeholder="Username" required="" autofocus="">
-		<label for="inputPassword" class="sr-only">Password</label>
-		<input name="pass" type="password" id="inputPassword" class="form-control" placeholder="Password" required="">
-		<button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
-	</form>
-</div>
-</body>
-</html>`
-)
+func copyHTMLAsset(w http.ResponseWriter, fname string) {
+	f, err := assets.Open(fname)
+	if err != nil {
+		err = errgo.Notef(err, "asset.Open(%s) failed", fname)
+		l.WithField("err", err).Error("copyHTMLAsset failed")
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "text/html")
+	w.WriteHeader(http.StatusOK)
+	if _, err := io.Copy(w, f); err != nil {
+		err = errgo.Notef(err, "io.Copy(w,f) failed")
+		l.WithField("err", err).Error("copyHTMLAsset failed")
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
 
 // Handler hooks up the passed mux.Rotuer to this apps http handlers
 func Handler(m *mux.Router) http.Handler {
 	if m == nil {
 		m = mux.NewRouter()
 	}
-
 	m.Path("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if _, err := ah.AuthenticateRequest(r); err != nil {
-			l.WithField("addr", r.RemoteAddr).Error(errgo.Notef(err, "AuthenticateRequest failed"))
-			fmt.Fprintf(w, loginHTML)
+			err = errgo.Notef(err, "AuthenticateRequest failed")
+			l.WithField("addr", r.RemoteAddr).Error(err)
+			copyHTMLAsset(w, "/login.html")
 			return
 		}
 
-		fmt.Fprint(w, loadHTML)
+		copyHTMLAsset(w, "/load.html")
 	})
 
 	m.Path("/wsrpc").Handler(websocket.Handler(wsRPCHandler))

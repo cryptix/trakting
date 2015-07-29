@@ -12,8 +12,6 @@ import (
 	"github.com/cryptix/go/logging"
 	"github.com/cryptix/goBoom"
 	"github.com/cryptix/trakting/store"
-	"github.com/elazarl/go-bindata-assetfs"
-	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/securecookie"
 	"github.com/gorilla/sessions"
@@ -73,31 +71,30 @@ func serveCmd(ctx *cli.Context) {
 		negroni.NewRecovery(),
 		logging.NewNegroni(l.WithField("module", "http")),
 	)
-	secuirtyHeaders := secure.New(secure.Options{
-		// IsDevelopment:         true,
-		AllowedHosts:          []string{"trakting.herokuapp.com"},
-		STSSeconds:            315360000,
-		FrameDeny:             true,
-		ContentTypeNosniff:    true,
-		BrowserXssFilter:      true,
-		ContentSecurityPolicy: `default-src 'self'; connect-src 'self' ws://localhost:3000 wss://trakting.herokuapp.com/wsrpc`,
-	})
+	opts := secure.Options{
+		AllowedHosts:       []string{"trakting.herokuapp.com"},
+		STSSeconds:         315360000,
+		FrameDeny:          true,
+		ContentTypeNosniff: true,
+		BrowserXssFilter:   true,
+	}
+	if production {
+		opts.ContentSecurityPolicy = `default-src 'self'; connect-src 'self' wss://trakting.herokuapp.com/wsrpc;`
+	} else {
+		opts.IsDevelopment = true
+		opts.ContentSecurityPolicy = `default-src 'self'; connect-src ws://localhost:3000;`
+	}
+
+	secuirtyHeaders := secure.New(opts)
 	app.Use(negroni.HandlerFunc(secuirtyHeaders.HandlerFuncWithNext))
 
 	r := mux.NewRouter()
-	r.PathPrefix("/public/").Handler(handlers.CompressHandler(
-		http.StripPrefix("/public/", http.FileServer(
-			&assetfs.AssetFS{
-				Asset:    Asset,
-				AssetDir: AssetDir,
-				Prefix:   "public",
-			},
-		))))
-
+	r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(assets)))
 	app.UseHandler(Handler(r))
 
 	listenAddr := ":" + os.Getenv("PORT")
 	lis, err := net.Listen("tcp", listenAddr)
+	logging.CheckFatal(err)
 	l.Info("Listening on", lis.Addr())
 
 	logging.CheckFatal(http.Serve(lis, app))
