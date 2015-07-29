@@ -1,9 +1,6 @@
 {
 	"ImportPath": "github.com/cryptix/trakting",
-	"GoVersion": "go1.4.2",
-	"Packages": [
-		"./..."
-	],
+	"GoVersion": "devel +cc8f544 Fri Jul 17 03:34:11 2015 +0000",
 	"Deps": [
 		{
 			"ImportPath": "github.com/Sirupsen/logrus",
@@ -46,24 +43,8 @@
 			"Rev": "ee59c27728001e150279063c77b5519813a17a0a"
 		},
 		{
-			"ImportPath": "github.com/dustin/go-humanize",
-			"Rev": "b198514c204f20799b91c93b6ffd8b26be04c2c9"
-		},
-		{
 			"ImportPath": "github.com/elazarl/go-bindata-assetfs",
 			"Rev": "fe5a90c9bd2990734f4928be5d3aeebb00f61f70"
-		},
-		{
-			"ImportPath": "github.com/gopherjs/gopherjs/js",
-			"Rev": "38e6f4b84111fed1ada21bd3777cdb811a4bb30b"
-		},
-		{
-			"ImportPath": "github.com/gopherjs/jquery",
-			"Rev": "fb45a6e6cc96d16a42442777c841ff86a3ce11a7"
-		},
-		{
-			"ImportPath": "github.com/gopherjs/websocket",
-			"Rev": "8c8a1daf8eb22111ffd1f5c8001d23e476a9cd33"
 		},
 		{
 			"ImportPath": "github.com/gorilla/context",
@@ -108,20 +89,8 @@
 			"Rev": "442e588f213303bec7936deba67901f8fc8f18b1"
 		},
 		{
-			"ImportPath": "github.com/neelance/dom",
-			"Rev": "77d3ee5a4cef8556e947ddd1ba2bb86938126af2"
-		},
-		{
 			"ImportPath": "github.com/oxtoacart/bpool",
 			"Rev": "923fab21d0624a469b877a05bbfc562c1c26c663"
-		},
-		{
-			"ImportPath": "github.com/stretchr/testify/assert",
-			"Rev": "e897f97d666c44ddbc131f4121c2961034b4c1b4"
-		},
-		{
-			"ImportPath": "github.com/stretchr/testify/require",
-			"Rev": "e897f97d666c44ddbc131f4121c2961034b4c1b4"
 		},
 		{
 			"ImportPath": "golang.org/x/crypto/bcrypt",
@@ -150,18 +119,6 @@
 		{
 			"ImportPath": "gopkg.in/unrolled/secure.v1",
 			"Rev": "7c5d20f5d23b4825dfe542a006b37d6bdb5950f6"
-		},
-		{
-			"ImportPath": "honnef.co/go/js/console",
-			"Rev": "105276c4355828b6126d4d7d0bf8b09d02606686"
-		},
-		{
-			"ImportPath": "honnef.co/go/js/dom",
-			"Rev": "5f25eefafd064224f9e3f99d71796c68addbcf86"
-		},
-		{
-			"ImportPath": "honnef.co/go/js/util",
-			"Rev": "96b8dd9d16214b6cd9d8c8e84b3a375da4688108"
 		},
 		{
 			"ImportPath": "sourcegraph.com/sourcegraph/rwvfs",
